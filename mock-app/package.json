@@ -1,0 +1,21 @@
+{
+  "name": "mock-app",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "permissionless": "^0.2.13",
+    "tslib": "2.6.2",
+    "typescript": "5.4.2",
+    "viem": "^2.20.0"
+  },
+  "scripts": {
+    "start": "wait-port mock-paymaster:3000 && wait-port alto:4337 && tsx src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.4",
+    "tsx": "4.9.1",
+    "wait-port": "1.0.4"
+  }
+}
