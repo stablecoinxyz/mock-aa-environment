@@ -10,6 +10,7 @@ import {
   setupSbcPaymasterV07,
 } from "./helpers/verifyingPaymasters";
 import { createRpcHandler, createSbcRpcHandler } from "./relay";
+import { setupSampleNft } from "./helpers/sampleNft";
 
 const main = async () => {
   const walletClient = await getAnvilWalletClient();
@@ -64,11 +65,7 @@ const main = async () => {
     entryPoint: ENTRYPOINT_ADDRESS_V07,
   });
 
-  const altoBundlerV06 = createPimlicoBundlerClient({
-    chain: await getChain(),
-    transport: http(process.env.ALTO_RPC),
-    entryPoint: ENTRYPOINT_ADDRESS_V06,
-  });
+  const nft = await setupSampleNft(walletClient);
 
   const app = Fastify({});
 
@@ -79,7 +76,6 @@ const main = async () => {
 
   const rpcHandler = createSbcRpcHandler(
     altoBundlerV07,
-    altoBundlerV06,
     paymasterV07,
     walletClient
   );

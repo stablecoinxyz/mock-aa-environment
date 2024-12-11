@@ -580,7 +580,6 @@ const handleSbcMethodV07 = async (
 
 const handleSbcMethod = async (
   altoBundlerV07: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>,
-  altoBundlerV06: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V06_TYPE>,
   paymasterV07: GetContractReturnType<
     typeof PaymasterV07Abi,
     PublicClient<Transport, Chain>
@@ -588,46 +587,6 @@ const handleSbcMethod = async (
   walletClient: WalletClient<Transport, Chain, Account>,
   parsedBody: JsonRpcSchema
 ) => {
-  // if (parsedBody.method === "pm_sponsorUserOperation") {
-  //   const params = pmSponsorUserOperationParamsSchema.safeParse(
-  //     parsedBody.params
-  //   );
-
-  //   if (!params.success) {
-  //     throw new RpcError(
-  //       fromZodError(params.error).message,
-  //       ValidationErrors.InvalidFields
-  //     );
-  //   }
-
-  //   const [userOperation, entryPoint] = params.data;
-
-  //   if (entryPoint === ENTRYPOINT_ADDRESS_V07) {
-  //     return await handleMethodV07(
-  //       userOperation as UserOperation<"v0.7">,
-  //       altoBundlerV07,
-  //       verifyingPaymasterV07,
-  //       walletClient,
-  //       true
-  //     );
-  //   }
-
-  //   if (entryPoint === ENTRYPOINT_ADDRESS_V06) {
-  //     return await handleMethodV06(
-  //       userOperation as UserOperation<"v0.6">,
-  //       altoBundlerV06,
-  //       verifyingPaymasterV06,
-  //       walletClient,
-  //       true
-  //     );
-  //   }
-
-  //   throw new RpcError(
-  //     "EntryPoint not supported",
-  //     ValidationErrors.InvalidFields
-  //   );
-  // }
-
   if (parsedBody.method === "pm_getPaymasterStubData") {
     const params = pmGetPaymasterStubDataParamsSchema.safeParse(
       parsedBody.params
@@ -651,12 +610,6 @@ const handleSbcMethod = async (
         paymasterPostOpGasLimit: toHex(20_000n),
       };
     }
-
-    // if (entryPoint === ENTRYPOINT_ADDRESS_V06) {
-    //   return {
-    //     paymasterAndData: `${verifyingPaymasterV06.address}00000000000000000000000000000000000000000000000000000101010101010000000000000000000000000000000000000000000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c`,
-    //   };
-    // }
 
     throw new RpcError(
       "EntryPoint not supported",
@@ -686,35 +639,11 @@ const handleSbcMethod = async (
       );
     }
 
-    // if (entryPoint === ENTRYPOINT_ADDRESS_V06) {
-    //   return await handleMethodV06(
-    //     userOperation as UserOperation<"v0.6">,
-    //     altoBundlerV06,
-    //     verifyingPaymasterV06,
-    //     walletClient,
-    //     false
-    //   );
-    // }
-
     throw new RpcError(
       "EntryPoint not supported",
       ValidationErrors.InvalidFields
     );
   }
-
-  // if (parsedBody.method === "pm_validateSponsorshipPolicies") {
-  //   return [
-  //     {
-  //       sponsorshipPolicyId: "sp_crazy_kangaroo",
-  //       data: {
-  //         name: "Free ops for devs",
-  //         author: "foo",
-  //         icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",
-  //         description: "Free userOps :)",
-  //       },
-  //     },
-  //   ];
-  // }
 
   throw new RpcError(
     "Attempted to call an unknown method",
@@ -724,7 +653,6 @@ const handleSbcMethod = async (
 
 export const createSbcRpcHandler = (
   altoBundlerV07: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>,
-  altoBundlerV06: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V06_TYPE>,
   paymasterV07: GetContractReturnType<
     typeof PaymasterV07Abi,
     PublicClient<Transport, Chain>
@@ -744,7 +672,6 @@ export const createSbcRpcHandler = (
     try {
       const result = await handleSbcMethod(
         altoBundlerV07,
-        altoBundlerV06,
         paymasterV07,
         walletClient,
         parsedBody.data

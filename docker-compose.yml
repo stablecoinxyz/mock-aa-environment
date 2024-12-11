@@ -4,6 +4,13 @@ services:
     ports: ["8545:8545"]
     entrypoint: ["anvil", "--host", "0.0.0.0", "--block-time", "10"]
 
+  alto:
+    image: ghcr.io/pimlicolabs/mock-alto-bundler:main
+    ports: ["4337:4337"]
+    command: "--log-level info"
+    environment:
+      - ANVIL_RPC=http://anvil:8545
+
   mock-paymaster:
     build:
       context: ./mock-verifying-paymaster
@@ -13,9 +20,11 @@ services:
       - ALTO_RPC=http://alto:4337
       - ANVIL_RPC=http://anvil:8545
 
-  alto:
-    image: ghcr.io/pimlicolabs/mock-alto-bundler:main
-    ports: ["4337:4337"]
-    command: "--log-level info"
+  app:
+    build:
+      context: ./mock-app
+      dockerfile: Dockerfile
     environment:
+      - ALTO_RPC=http://alto:4337
       - ANVIL_RPC=http://anvil:8545
+      - PAYMASTER_RPC=http://mock-paymaster:3000
