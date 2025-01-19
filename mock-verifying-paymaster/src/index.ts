@@ -1,71 +1,33 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
-import { ENTRYPOINT_ADDRESS_V06, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { http } from "viem";
 import { getAnvilWalletClient, getChain } from "./helpers/utils";
-import {
-  setupVerifyingPaymasterV06,
-  setupVerifyingPaymasterV07,
-  setupSbcPaymasterV07,
-} from "./helpers/verifyingPaymasters";
-import { createRpcHandler, createSbcRpcHandler } from "./relay";
+import { setupSbcPaymasterV07 } from "./helpers/verifyingPaymasters";
+import { setupBalanceVerifyingPaymasterV07 } from "./helpers/balanceVerifyingPaymasters";
+import { createSbcRpcHandler } from "./relay";
 import { setupSampleNft } from "./helpers/sampleNft";
-
-const main = async () => {
-  const walletClient = await getAnvilWalletClient();
-  const verifyingPaymasterV07 = await setupVerifyingPaymasterV07(walletClient);
-  const verifyingPaymasterV06 = await setupVerifyingPaymasterV06(walletClient);
-
-  const altoBundlerV07 = createPimlicoBundlerClient({
-    chain: await getChain(),
-    transport: http(process.env.ALTO_RPC),
-    entryPoint: ENTRYPOINT_ADDRESS_V07,
-  });
-
-  const altoBundlerV06 = createPimlicoBundlerClient({
-    chain: await getChain(),
-    transport: http(process.env.ALTO_RPC),
-    entryPoint: ENTRYPOINT_ADDRESS_V06,
-  });
-
-  const app = Fastify({});
-
-  app.register(cors, {
-    origin: "*",
-    methods: ["POST", "GET", "OPTIONS"],
-  });
-
-  const rpcHandler = createRpcHandler(
-    altoBundlerV07,
-    altoBundlerV06,
-    verifyingPaymasterV07,
-    verifyingPaymasterV06,
-    walletClient
-  );
-  app.post("/", {}, rpcHandler);
-
-  app.get("/ping", async (_request, reply) => {
-    return reply.code(200).send({ message: "pong" });
-  });
-
-  await app.listen({ host: "0.0.0.0", port: 3000 });
-};
-
-// main();
+import { setupSampleErc20 } from "./helpers/sampleErc20";
 
 (async () => {
   const walletClient = await getAnvilWalletClient();
 
-  const paymasterV07 = await setupSbcPaymasterV07(walletClient);
-
   const altoBundlerV07 = createPimlicoBundlerClient({
     chain: await getChain(),
     transport: http(process.env.ALTO_RPC),
     entryPoint: ENTRYPOINT_ADDRESS_V07,
   });
 
-  const nft = await setupSampleNft(walletClient);
+  // Setup the SBC token and mint some tokens to the walletClient
+  const numTokens = 100n;
+  const sbcToken = await setupSampleErc20(walletClient, numTokens);
+
+  // Setup the Balance Verifying Paymaster
+  const REQUIRED_SBC_BALANCE = 100n * 10n ** 18n;
+  const paymasterV07 = await setupBalanceVerifyingPaymasterV07(walletClient, sbcToken.address, REQUIRED_SBC_BALANCE);
+
+  await setupSampleNft(walletClient);
 
   const app = Fastify({});
 

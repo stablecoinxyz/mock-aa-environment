@@ -46,6 +46,10 @@ import {
   abi as PaymasterV07Abi,
   bytecode as PaymasterV07Bytecode,
 } from "../artifacts/contracts/Paymaster.sol/Paymaster.json";
+import {
+  abi as BalanceVerifyingPaymasterAbi,
+  bytecode as BalanceVerifyingPaymasterBytecode,
+} from "../artifacts/contracts/BalanceVerifyingPaymaster.sol/BalanceVerifyingPaymaster.json";
 
 const handleMethodV06 = async (
   userOperation: UserOperation<"v0.6">,
@@ -330,8 +334,8 @@ const handleMethod = async (
         paymaster: verifyingPaymasterV07.address,
         paymasterData:
           "0x00000000000000000000000000000000000000000000000000000101010101010000000000000000000000000000000000000000000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c",
-        paymasterVerificationGasLimit: toHex(50_000n),
-        paymasterPostOpGasLimit: toHex(20_000n),
+        paymasterVerificationGasLimit: toHex(500_000n),
+        paymasterPostOpGasLimit: toHex(200_000n),
       };
     }
 
@@ -471,6 +475,9 @@ const handleSbcMethodV07 = async (
   paymasterV07: GetContractReturnType<
     typeof PaymasterV07Abi,
     PublicClient<Transport, Chain>
+  > | GetContractReturnType<
+    typeof BalanceVerifyingPaymasterAbi,
+    PublicClient<Transport, Chain>
   >,
   walletClient: WalletClient<Transport, Chain, Account>,
   estimateGas: boolean
@@ -539,21 +546,17 @@ const handleSbcMethodV07 = async (
   ]);
   op.paymaster = paymasterV07.address;
 
-  // const hash = await paymasterV07.read.getHash([
-  //   getPackedUserOperation(op),
-  //   validUntil,
-  //   validAfter,
-  // ]);
-  // const sig = await walletClient.signMessage({
-  //   message: { raw: hash as Hex },
-  // });
+  const hash = await paymasterV07.read.getHash([
+    getPackedUserOperation(op),
+    validUntil,
+    validAfter,
+  ]);
+  const sig = await walletClient.signMessage({
+    message: { raw: hash as Hex },
+  });
 
-  // HACK: Hardcoded fake signature
-  const sig = "0x";
 
   const paymaster = paymasterV07.address;
-  // DEV: we build the paymasterData here. However, our "approveAll" contract
-  // will not even look at this data. It will just approve all operations.
   const paymasterData = concat([
     encodeAbiParameters(
       [
@@ -583,6 +586,9 @@ const handleSbcMethod = async (
   paymasterV07: GetContractReturnType<
     typeof PaymasterV07Abi,
     PublicClient<Transport, Chain>
+  > | GetContractReturnType<
+    typeof BalanceVerifyingPaymasterAbi,
+    PublicClient<Transport, Chain>
   >,
   walletClient: WalletClient<Transport, Chain, Account>,
   parsedBody: JsonRpcSchema
@@ -606,8 +612,8 @@ const handleSbcMethod = async (
         paymaster: paymasterV07.address,
         paymasterData:
           "0x00000000000000000000000000000000000000000000000000000101010101010000000000000000000000000000000000000000000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c",
-        paymasterVerificationGasLimit: toHex(50_000n),
-        paymasterPostOpGasLimit: toHex(20_000n),
+        paymasterVerificationGasLimit: toHex(500_000n),
+        paymasterPostOpGasLimit: toHex(200_000n),
       };
     }
 
@@ -655,6 +661,9 @@ export const createSbcRpcHandler = (
   altoBundlerV07: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>,
   paymasterV07: GetContractReturnType<
     typeof PaymasterV07Abi,
+    PublicClient<Transport, Chain>
+  > | GetContractReturnType<
+    typeof BalanceVerifyingPaymasterAbi,
     PublicClient<Transport, Chain>
   >,
   walletClient: WalletClient<Transport, Chain, Account>
