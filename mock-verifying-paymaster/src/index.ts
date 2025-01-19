@@ -23,9 +23,14 @@ import { setupSampleErc20 } from "./helpers/sampleErc20";
   const numTokens = 100n;
   const sbcToken = await setupSampleErc20(walletClient, numTokens);
 
-  // Setup the Balance Verifying Paymaster
-  const REQUIRED_SBC_BALANCE = 100n * 10n ** 18n;
-  const paymasterV07 = await setupBalanceVerifyingPaymasterV07(walletClient, sbcToken.address, REQUIRED_SBC_BALANCE);
+  // --------------------------------------------------------------------------
+  // This sets up the blank "Approve All" SBC Paymaster; 
+  const paymasterV07 = await setupSbcPaymasterV07(walletClient);
+  // --------------------------------------------------------------------------
+  // UNCOMMENT to setup the Balance Verifying Paymaster
+  // const REQUIRED_SBC_BALANCE = 100n * 10n ** 18n;
+  // const paymasterV07 = await setupBalanceVerifyingPaymasterV07(walletClient, sbcToken.address, REQUIRED_SBC_BALANCE);
+  // --------------------------------------------------------------------------
 
   await setupSampleNft(walletClient);
 

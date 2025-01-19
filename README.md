@@ -1,5 +1,19 @@
 # mock-aa-environment
 
+## Exercise - Starting Instructions
+
+Please use the `exercise` branch. You may consider starting with these steps:
+
+1. Review `mock-app/src/index.ts` and `mock-verifying-paymaster/src/index.ts` to understand the code.
+2. From the `mock-verifying-paymaster` subdirectory, run `npx hardhat compile` to compile the paymaster contract (Paymaster.sol).
+3. Run the project by `docker compose up` in the root directory.
+4. Wait until you see the big "DONE" message in the logs.
+5. In the `mock-verifying-paymaster/contracts` subdirectory, write a new paymaster contract (BalanceVerifyingPaymaster.sol) that requires a minimum balance of 100 SBC on the sender (Smart Account) address.
+6. Recompile the paymaster contract by running `npx hardhat compile` in the `mock-verifying-paymaster` subdirectory.
+7. In the `mock-verifying-paymaster/src/index.ts` file, uncomment the section that sets up the Balance Verifying Paymaster, comment out the section that sets up the SBC Paymaster.
+
+## Overview
+
 This repo sets up a local Account Abstraction (AA) environment using docker containers.
 
 One of the benefits enabled by Account Abstraction is for developers to pay gas on behalf of users. This is done by deploying and funding a paymaster contract, and setting up a Paymaster service that is compatible with the Paymaster contract and the target version of the EntryPoint. By abstracting wallet functionality into Smart contracts (Smart Accounts), and packaging bundler and paymaster functionality into a "Smart Account Client", we can send "user operations" (specially packaged transactions) and have our custom paymaster pay for the gas.

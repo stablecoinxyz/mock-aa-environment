@@ -95,10 +95,13 @@ async function main() {
   console.log(`Owner Address: ${owner.address}`);
   console.log(`Smart Account Address: ${smartAccountClient.account.address}`);
 
+  // --------------------------------------------------------------------------
   // Owner transfers SBC to its associated smart account
+  // --------------------------------------------------------------------------
   // DEV: change this value to test whether the BalanceVerifyingPaymaster is working
-  // const amountToTransfer = 100n * 10n ** 18n; // 100 SBC in Wei  
-  const amountToTransfer = 99n * 10n ** 18n; // 99 SBC in Wei  
+  const amountToTransfer = 100n * 10n ** 18n; // 100 SBC in Wei  
+  // const amountToTransfer = 99n * 10n ** 18n; // 99 SBC in Wei  
+  // --------------------------------------------------------------------------
 
   const transferData = encodeFunctionData({
     abi: sbcAbi,
