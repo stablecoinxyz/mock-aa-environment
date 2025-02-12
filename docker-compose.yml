@@ -1,11 +1,13 @@
 services:
   anvil:
-    image: ghcr.io/foundry-rs/foundry:nightly-c4a984fbf2c48b793c8cd53af84f56009dd1070c
+    image: ghcr.io/foundry-rs/foundry:stable
+    platform: linux/amd64
     ports: ["8545:8545"]
     entrypoint: ["anvil", "--host", "0.0.0.0", "--block-time", "10"]
 
   alto:
     image: ghcr.io/pimlicolabs/mock-alto-bundler:main
+    platform: linux/amd64
     ports: ["4337:4337"]
     command: "--log-level info"
     environment:

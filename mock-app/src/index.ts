@@ -22,7 +22,7 @@ const BUNDLER_RPC = process.env.ALTO_RPC!;
 const PAYMASTER_RPC = process.env.PAYMASTER_RPC!;
 
 // The address of the NFT contract we deployed with mock-paymaster
-const NFT_CONTRACT_ADDRESS = "0x3755982e69143c1c05C8cC13EF220ec96e382b4e";
+const NFT_CONTRACT_ADDRESS = "0xb819edABAEccc6E0eE44371a9A2Df019493DBb58";
 
 // Define our local anvil chain
 const localAnvil = defineChain({
@@ -112,28 +112,20 @@ async function main() {
   console.log("                                       ");
 
   // We can check the owner of the NFT by calling the `ownerOf` function.
-  const ownerOfCallData = encodeFunctionData({
+  const ownerOfNft = await localPublicClient.readContract({
+    address: NFT_CONTRACT_ADDRESS,
     abi: nftAbi,
     functionName: "ownerOf",
-    args: [BigInt(1)], // tokenId starts at 1
+    args: [BigInt(1)],
   });
 
-  const ownerOfNft = await localPublicClient.call({
-    to: NFT_CONTRACT_ADDRESS,
-    data: ownerOfCallData,
-  });
-
-  const ownerOfNftAddress = decodeFunctionResult({
-    abi: nftAbi,
-    functionName: "ownerOf",
-    data: ownerOfNft.data as Hex,
-  });
+  console.log(`Owner of NFT: ${ownerOfNft}`);
 
   console.log("                                       ");
   console.log("                                       ");
   console.log("                                       ");
   console.log("***************************************");
-  console.log(`Owner of NFT Address : ${ownerOfNftAddress}`);
+  console.log(`Owner of NFT Address : ${ownerOfNft}`);
   console.log(`Smart Account Address: ${smartAccountClient.account.address}`);
   console.log("***************************************");
   console.log("                                       ");
