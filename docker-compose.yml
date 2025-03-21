@@ -3,7 +3,7 @@ services:
     image: ghcr.io/foundry-rs/foundry:stable
     platform: linux/amd64
     ports: ["8545:8545"]
-    entrypoint: ["anvil", "--host", "0.0.0.0", "--block-time", "10"]
+    entrypoint: ["anvil", "--host", "0.0.0.0", "--block-time", "1", "--tracing"]
 
   alto:
     image: ghcr.io/pimlicolabs/mock-alto-bundler:main

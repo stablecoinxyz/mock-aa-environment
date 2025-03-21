@@ -99,6 +99,7 @@ async function main() {
       to: NFT_CONTRACT_ADDRESS,
       data: callData,
       value: BigInt(0),
+      gas: 1_000_000n,
     })
     .catch((error) => {
       console.error("\x1b[31m", `❌ ${error.message}`);

@@ -2,7 +2,7 @@
   "name": "mock-paymaster",
   "private": true,
   "scripts": {
-    "start": "wait-port anvil:8545 && tsx src/index.ts"
+    "start": "wait-port anvil:8545 && wait-port alto:4337 && tsx src/index.ts"
   },
   "dependencies": {
     "@account-abstraction/contracts": "0.7.0",

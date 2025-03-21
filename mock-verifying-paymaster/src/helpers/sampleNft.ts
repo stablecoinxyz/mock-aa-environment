@@ -12,6 +12,7 @@ import {
   getContractAddress,
   slice,
   encodeAbiParameters,
+  parseAbiParameters
 } from "viem";
 import { getChain } from "./utils";
 
@@ -19,7 +20,6 @@ import {
   abi as nftAbi,
   bytecode as nftBytecode,
 } from "../../artifacts/contracts/SampleNFT.sol/SampleNFT.json";
-import { parseAbiParameters } from "viem";
 
 const DETERMINISTIC_DEPLOYER = "0x4e59b44847b379578588920ca78fbf26c0b4956c";
 
