@@ -10,34 +10,19 @@ import {
   type RpcRequestError,
   type Transport,
   type WalletClient,
-  concat,
-  encodeAbiParameters,
-  toHex,
-  keccak256,
-  toBytes,
-  bytesToHex,
-  numberToHex,
-  recoverMessageAddress,
   hexToBytes,
+  toHex,
 } from "viem";
 import { fromZodError } from "zod-validation-error";
 import {
   ENTRYPOINT_ADDRESS_V07,
   type EstimateUserOperationGasReturnType,
-  getPackedUserOperation,
-  getUserOperationHash,
 } from "permissionless";
 import type { PimlicoBundlerClient } from "permissionless/clients/pimlico";
 import type {
-  ENTRYPOINT_ADDRESS_V06_TYPE,
   ENTRYPOINT_ADDRESS_V07_TYPE,
   UserOperation,
 } from "permissionless/types";
-import { ENTRYPOINT_ADDRESS_V06 } from "permissionless/utils";
-import type {
-  VERIFYING_PAYMASTER_V06_ABI,
-  VERIFYING_PAYMASTER_V07_ABI,
-} from "./helpers/abi";
 import {
   InternalBundlerError,
   type JsonRpcSchema,
@@ -45,10 +30,8 @@ import {
   ValidationErrors,
   jsonRpcSchema,
   pmGetPaymasterData,
-  pmGetPaymasterStubDataParamsSchema,
   pmSponsorUserOperationParamsSchema,
 } from "./helpers/schema";
-import { getTrustedSigner, maxBigInt } from "./helpers/utils";
 import {
   abi as PaymasterV07Abi,
   bytecode as PaymasterV07Bytecode,

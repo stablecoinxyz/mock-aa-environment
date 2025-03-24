@@ -20,7 +20,7 @@ import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import {
   ENTRYPOINT_V07_ABI,
 } from "./abi";
-import { getChain, getTrustedSigner } from "./utils";
+import { getChain } from "./utils";
 
 import {
   abi as PaymasterV07Abi,
