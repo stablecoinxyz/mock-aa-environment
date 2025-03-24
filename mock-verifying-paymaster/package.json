@@ -21,5 +21,6 @@
     "hardhat": "^2.22.17",
     "tsx": "4.9.1",
     "wait-port": "1.0.4"
-  }
+  },
+  "license": "MIT"
 }
