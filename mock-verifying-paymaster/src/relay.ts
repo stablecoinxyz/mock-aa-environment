@@ -482,7 +482,7 @@ const handleSbcMethodV07 = async (
   try {
     // Set timestamps for validation window
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    const validAfter = currentTimestamp;
+    const validAfter = currentTimestamp + 1000;
     const validUntil = currentTimestamp + 3600; // 1 hour validity
     
     // Use the sender address from the userOperation

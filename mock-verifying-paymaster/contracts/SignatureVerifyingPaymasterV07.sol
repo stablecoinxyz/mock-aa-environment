@@ -52,12 +52,14 @@ contract SignatureVerifyingPaymasterV07 is BasePaymaster {
     }
 
     /**
-     * @dev Constructor that initializes the paymaster with EntryPoint and signer address
+     * @dev Constructor that initializes the paymaster with EntryPoint, signer address, and owner
      * @param _entryPoint The EntryPoint contract address that will call this paymaster
      * @param _verifyingSigner The address authorized to sign transaction approvals
+     * @param _owner The address that will be set as the owner of this contract
      */
-    constructor(IEntryPoint _entryPoint, address _verifyingSigner) BasePaymaster(_entryPoint) {
+    constructor(IEntryPoint _entryPoint, address _verifyingSigner, address _owner) BasePaymaster(_entryPoint) {
         verifyingSigner = _verifyingSigner;
+        _transferOwnership(_owner);
     }
 
     /**

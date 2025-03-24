@@ -55,10 +55,14 @@ import { setupSampleNft } from "./helpers/sampleNft";
 // main();
 
 (async () => {
+  // deployer
+  const deployerWalletClient = await getAnvilWalletClient();
   // trusted signer
-  const walletClient = await getAnvilWalletClient();
+  const trustedSignerWalletClient = await getAnvilWalletClient();
+  // owner
+  const ownerWalletClient = await getAnvilWalletClient();
 
-  const paymasterV07 = await setupSbcPaymasterV07(walletClient);
+  const paymasterV07 = await setupSbcPaymasterV07(trustedSignerWalletClient, ownerWalletClient);
 
   const altoBundlerV07 = createPimlicoBundlerClient({
     chain: await getChain(),
@@ -66,7 +70,7 @@ import { setupSampleNft } from "./helpers/sampleNft";
     entryPoint: ENTRYPOINT_ADDRESS_V07,
   });
 
-  const nft = await setupSampleNft(walletClient);
+  const nft = await setupSampleNft(deployerWalletClient);
 
   const app = Fastify({});
 
@@ -78,7 +82,7 @@ import { setupSampleNft } from "./helpers/sampleNft";
   const rpcHandler = createSbcRpcHandler(
     altoBundlerV07,
     paymasterV07 as any,
-    walletClient
+    trustedSignerWalletClient
   );
 
   app.post("/", {}, rpcHandler);

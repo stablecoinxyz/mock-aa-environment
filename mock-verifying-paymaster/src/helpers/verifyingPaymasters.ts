@@ -44,17 +44,23 @@ const DETERMINISTIC_DEPLOYER = "0x4e59b44847b379578588920ca78fbf26c0b4956c";
 //     pad(owner),
 //   ]);
 
-
-const SBC_PAYMASTER_V07_CALL = (trustedSigner: Address): Hex => {
+/**
+ * Creates the call that deploys the VerifyingPaymaster v0.7
+ * @param trustedSigner - The address of the trusted signer
+ * @param owner - The address of the owner
+ * @returns The call data for the deployment
+ */
+const SBC_PAYMASTER_V07_CALL = (trustedSigner: Address, owner: Address): Hex => {
   // Properly encode constructor parameters
   const constructorArgs = encodeAbiParameters(
-    parseAbiParameters("address _entryPoint, address _trustedSigner"), 
-    [ENTRYPOINT_ADDRESS_V07, trustedSigner]
+    parseAbiParameters("address _entryPoint, address _verifyingSigner, address _owner"), 
+    [ENTRYPOINT_ADDRESS_V07, trustedSigner, owner]
   );
 
   // Log key details to verify inputs
   console.log("Bytecode length:", (PaymasterV07Bytecode as string).length);
   console.log("ConstructorArgs length:", constructorArgs.length);
+  console.log("ConstructorArgs:", constructorArgs);
   
   // Concatenate salt + bytecode + constructor args
   return concat([
@@ -65,9 +71,13 @@ const SBC_PAYMASTER_V07_CALL = (trustedSigner: Address): Hex => {
 }
 
 export const setupSbcPaymasterV07 = async (
-  walletClient: WalletClient<Transport, Chain, Account>
+  deployerWalletClient: WalletClient<Transport, Chain, Account>,
+  ownerWalletClient: WalletClient<Transport, Chain, Account>
 ) => {
-  const data = SBC_PAYMASTER_V07_CALL(walletClient.account.address);
+  const data = SBC_PAYMASTER_V07_CALL(
+    deployerWalletClient.account.address, 
+    ownerWalletClient.account.address
+  );
 
   const publicClient = createPublicClient({
     transport: http(process.env.ANVIL_RPC),
@@ -82,7 +92,7 @@ export const setupSbcPaymasterV07 = async (
     // console.log("EntryPoint exists:", !!entryPointCode && entryPointCode !== '0x');
     
     // Send transaction
-    const hash = await walletClient.sendTransaction({
+    const hash = await deployerWalletClient.sendTransaction({
       to: DETERMINISTIC_DEPLOYER,
       data,
       gas: 10_000_000n,
@@ -127,13 +137,13 @@ export const setupSbcPaymasterV07 = async (
     const paymaster = getContract({
       address,
       abi: PaymasterV07Abi,
-      client: walletClient,
+      client: deployerWalletClient,
     });
   
     const entryPointV7 = getContract({
       address: ENTRYPOINT_ADDRESS_V07,
       abi: ENTRYPOINT_V07_ABI,
-      client: walletClient,
+      client: deployerWalletClient,
     });
   
     await entryPointV7.write
