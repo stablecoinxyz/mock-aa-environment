@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
+import "./SignatureVerifyingPaymasterV07Storage.sol";
 import "@account-abstraction/contracts/core/BasePaymaster.sol";
 import "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import "@account-abstraction/contracts/core/UserOperationLib.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
@@ -14,21 +16,54 @@ import "hardhat/console.sol";
  * @dev A Paymaster contract for ERC-4337 v0.7 that sponsors UserOperations 
  * if they have a valid signature from the authorized signer.
  * 
- * This paymaster uses timestamps for validity periods and allows transactions
- * to be signed by a trusted entity before they're submitted on-chain.
+ * This is the upgradeable implementation of the paymaster that uses timestamps 
+ * for validity periods and allows transactions to be signed by a trusted entity 
+ * before they're submitted on-chain.
  */
-contract SignatureVerifyingPaymasterV07 is BasePaymaster {
+contract SignatureVerifyingPaymasterV07 is SignatureVerifyingPaymasterV07Storage, BasePaymaster {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
     using UserOperationLib for PackedUserOperation;
-
-    // Address authorized to sign paymaster approvals
-    address public verifyingSigner;
 
     // Custom errors for better gas efficiency and clearer error reporting
     error InvalidSignatureLength(uint256 length);
     error SignerMismatch(address recovered, address expected);
     error InvalidPaymasterData();
+    error NotInitialized();
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(IEntryPoint entryPoint) BasePaymaster(entryPoint) {}
+
+    /**
+     * @dev Initializes the paymaster with EntryPoint, signer address, and owner
+     * @param verifyingSigner_ The address authorized to sign transaction approvals
+     * @param owner_ The address that will be set as the owner of this contract
+     */
+    function initialize(
+        address verifyingSigner_,
+        address owner_
+    ) public initializer {
+        __SignatureVerifyingPaymasterV07_init(verifyingSigner_, owner_);
+    }
+
+    /**
+     * @dev Internal initialization function
+     */
+    function __SignatureVerifyingPaymasterV07_init(
+        address verifyingSigner_,
+        address owner_
+    ) internal onlyInitializing {
+        verifyingSigner = verifyingSigner_;
+        _transferOwnership(owner_);
+    }
+
+    /**
+     * @dev Updates the authorized signer address
+     * @param _verifyingSigner The new authorized signer address
+     */
+    function setVerifyingSigner(address _verifyingSigner) external onlyOwner {
+        verifyingSigner = _verifyingSigner;
+    }
 
     /**
      * @dev Packs validation timestamps and signature status into the format 
@@ -49,25 +84,6 @@ contract SignatureVerifyingPaymasterV07 is BasePaymaster {
             (uint256(validUntil) << 160) |
             (uint256(validAfter) << 208)
         );
-    }
-
-    /**
-     * @dev Constructor that initializes the paymaster with EntryPoint, signer address, and owner
-     * @param _entryPoint The EntryPoint contract address that will call this paymaster
-     * @param _verifyingSigner The address authorized to sign transaction approvals
-     * @param _owner The address that will be set as the owner of this contract
-     */
-    constructor(IEntryPoint _entryPoint, address _verifyingSigner, address _owner) BasePaymaster(_entryPoint) {
-        verifyingSigner = _verifyingSigner;
-        _transferOwnership(_owner);
-    }
-
-    /**
-     * @dev Updates the authorized signer address
-     * @param _verifyingSigner The new authorized signer address
-     */
-    function setVerifyingSigner(address _verifyingSigner) external onlyOwner {
-        verifyingSigner = _verifyingSigner;
     }
 
     /**
@@ -166,8 +182,7 @@ contract SignatureVerifyingPaymasterV07 is BasePaymaster {
         // Generate the hash using sender address and timestamps
         bytes32 hash = getHash(validUntil, validAfter, address(this), userOp.sender);
         
-        // Convert to EIP-191 format (prefixed) to match the format used when signing
-        // with walletClient.signMessage() in JavaScript/viem
+        // Convert to EIP-191 format
         bytes32 ethSignedHash = MessageHashUtils.toEthSignedMessageHash(hash);
         
         // Recover signer address from signature
@@ -225,4 +240,11 @@ contract SignatureVerifyingPaymasterV07 is BasePaymaster {
         // No additional logic for postOp in this implementation
         (mode, context, actualGasCost, actualUserOpFeePerGas); // unused params
     }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[50] private __gap;
 }
