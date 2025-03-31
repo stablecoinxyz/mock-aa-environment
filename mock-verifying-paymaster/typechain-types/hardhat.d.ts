@@ -42,13 +42,29 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IStakeManager__factory>;
     getContractFactory(
+      name: "OwnableUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OwnableUpgradeable__factory>;
+    getContractFactory(
       name: "Initializable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Initializable__factory>;
     getContractFactory(
+      name: "UUPSUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UUPSUpgradeable__factory>;
+    getContractFactory(
+      name: "ContextUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ContextUpgradeable__factory>;
+    getContractFactory(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
+      name: "IERC1822Proxiable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1822Proxiable__factory>;
     getContractFactory(
       name: "IERC1155Errors",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -94,18 +110,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TransparentUpgradeableProxy__factory>;
     getContractFactory(
-      name: "ERC20",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20__factory>;
-    getContractFactory(
-      name: "IERC20Metadata",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC20Metadata__factory>;
-    getContractFactory(
-      name: "IERC20",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC20__factory>;
-    getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
@@ -150,10 +154,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SafeCast__factory>;
     getContractFactory(
-      name: "Pausable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Pausable__factory>;
-    getContractFactory(
       name: "Strings",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
@@ -169,22 +169,6 @@ declare module "hardhat/types/runtime" {
       name: "SignatureVerifyingPaymasterV07",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SignatureVerifyingPaymasterV07__factory>;
-    getContractFactory(
-      name: "SignatureVerifyingPaymasterV07Factory",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Factory__factory>;
-    getContractFactory(
-      name: "SignatureVerifyingPaymasterV07Proxy",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Proxy__factory>;
-    getContractFactory(
-      name: "SignatureVerifyingPaymasterV07ProxyAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07ProxyAdmin__factory>;
-    getContractFactory(
-      name: "SignatureVerifyingPaymasterV07Storage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Storage__factory>;
 
     getContractAt(
       name: "BasePaymaster",
@@ -222,15 +206,35 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IStakeManager>;
     getContractAt(
+      name: "OwnableUpgradeable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OwnableUpgradeable>;
+    getContractAt(
       name: "Initializable",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Initializable>;
     getContractAt(
+      name: "UUPSUpgradeable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.UUPSUpgradeable>;
+    getContractAt(
+      name: "ContextUpgradeable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ContextUpgradeable>;
+    getContractAt(
       name: "Ownable",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
+    getContractAt(
+      name: "IERC1822Proxiable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1822Proxiable>;
     getContractAt(
       name: "IERC1155Errors",
       address: string | ethers.Addressable,
@@ -287,21 +291,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.TransparentUpgradeableProxy>;
     getContractAt(
-      name: "ERC20",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC20>;
-    getContractAt(
-      name: "IERC20Metadata",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC20Metadata>;
-    getContractAt(
-      name: "IERC20",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC20>;
-    getContractAt(
       name: "ERC721",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -357,11 +346,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.SafeCast>;
     getContractAt(
-      name: "Pausable",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Pausable>;
-    getContractAt(
       name: "Strings",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -381,26 +365,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
-    getContractAt(
-      name: "SignatureVerifyingPaymasterV07Factory",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Factory>;
-    getContractAt(
-      name: "SignatureVerifyingPaymasterV07Proxy",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Proxy>;
-    getContractAt(
-      name: "SignatureVerifyingPaymasterV07ProxyAdmin",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07ProxyAdmin>;
-    getContractAt(
-      name: "SignatureVerifyingPaymasterV07Storage",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Storage>;
 
     deployContract(
       name: "BasePaymaster",
@@ -431,13 +395,29 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IStakeManager>;
     deployContract(
+      name: "OwnableUpgradeable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.OwnableUpgradeable>;
+    deployContract(
       name: "Initializable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Initializable>;
     deployContract(
+      name: "UUPSUpgradeable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.UUPSUpgradeable>;
+    deployContract(
+      name: "ContextUpgradeable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ContextUpgradeable>;
+    deployContract(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "IERC1822Proxiable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1822Proxiable>;
     deployContract(
       name: "IERC1155Errors",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -483,18 +463,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TransparentUpgradeableProxy>;
     deployContract(
-      name: "ERC20",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC20>;
-    deployContract(
-      name: "IERC20Metadata",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20Metadata>;
-    deployContract(
-      name: "IERC20",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20>;
-    deployContract(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC721>;
@@ -539,10 +507,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeCast>;
     deployContract(
-      name: "Pausable",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Pausable>;
-    deployContract(
       name: "Strings",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
@@ -558,22 +522,6 @@ declare module "hardhat/types/runtime" {
       name: "SignatureVerifyingPaymasterV07",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Factory",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Factory>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Proxy",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Proxy>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07ProxyAdmin",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07ProxyAdmin>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Storage",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Storage>;
 
     deployContract(
       name: "BasePaymaster",
@@ -611,15 +559,35 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IStakeManager>;
     deployContract(
+      name: "OwnableUpgradeable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.OwnableUpgradeable>;
+    deployContract(
       name: "Initializable",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Initializable>;
     deployContract(
+      name: "UUPSUpgradeable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.UUPSUpgradeable>;
+    deployContract(
+      name: "ContextUpgradeable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ContextUpgradeable>;
+    deployContract(
       name: "Ownable",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "IERC1822Proxiable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1822Proxiable>;
     deployContract(
       name: "IERC1155Errors",
       args: any[],
@@ -676,21 +644,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TransparentUpgradeableProxy>;
     deployContract(
-      name: "ERC20",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC20>;
-    deployContract(
-      name: "IERC20Metadata",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20Metadata>;
-    deployContract(
-      name: "IERC20",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20>;
-    deployContract(
       name: "ERC721",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -746,11 +699,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeCast>;
     deployContract(
-      name: "Pausable",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Pausable>;
-    deployContract(
       name: "Strings",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -770,26 +718,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Factory",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Factory>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Proxy",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Proxy>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07ProxyAdmin",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07ProxyAdmin>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07Storage",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07Storage>;
 
     // default types
     getContractFactory(

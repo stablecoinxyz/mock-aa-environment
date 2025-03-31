@@ -16,6 +16,7 @@ import {
   slice,
   parseAbiParameters,
   encodeAbiParameters,
+  encodeFunctionData,
 } from "viem";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import {
@@ -26,14 +27,14 @@ import { getChain } from "./utils";
 import {
   abi as PaymasterV07Abi,
   bytecode as PaymasterV07Bytecode,
-} from "../../artifacts/contracts/SignatureVerifyingPaymasterV07.sol/SignatureVerifyingPaymasterV07.json";
+} from "../abi/contracts/SignatureVerifyingPaymasterV07.sol/SignatureVerifyingPaymasterV07.json";
 
 import {
-  abi as FactoryAbi,
-  bytecode as FactoryBytecode,
-} from "../../artifacts/contracts/SignatureVerifyingPaymasterV07Factory.sol/SignatureVerifyingPaymasterV07Factory.json";
+  abi as ProxyAbi,
+  bytecode as ProxyBytecode,
+} from "../abi/@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol/ERC1967Proxy.json";
 
-const DETERMINISTIC_DEPLOYER = "0x4e59b44847b379578588920ca78fbf26c0b4956c";
+// const DETERMINISTIC_DEPLOYER = "0x4e59b44847b379578588920ca78fbf26c0b4956c";
 
 // /**
 //  * Creates the call that deploys the VerifyingPaymaster v0.7
@@ -77,134 +78,92 @@ export const setupSbcPaymasterV07 = async (
   });
 
   try {
-    // 1. Deploy the factory first
-    console.log("Deploying factory...");
-    
-    // Verify factory bytecode is not empty
-    if (!FactoryBytecode || FactoryBytecode === "0x") {
-      throw new Error("Factory bytecode is empty. Make sure contracts are compiled.");
-    }
-
-    const factoryDeployHash = await deployerWalletClient.deployContract({
-      abi: FactoryAbi,
-      bytecode: FactoryBytecode as `0x${string}`,
-      args: [],
+    // 1. Deploy the implementation contract
+    console.log("Deploying implementation contract...");
+    const implementationDeployTx = await deployerWalletClient.deployContract({
+      abi: PaymasterV07Abi,
+      bytecode: PaymasterV07Bytecode as Hex,
+      args: []
     });
 
-    const factoryReceipt = await publicClient.waitForTransactionReceipt({ hash: factoryDeployHash });
-    const factoryAddress = factoryReceipt.contractAddress;
-    if (!factoryAddress) throw new Error("Factory deployment failed");
-    console.log("Factory deployed to:", factoryAddress);
-
-    // Verify implementation bytecode is not empty
-    if (!PaymasterV07Bytecode || PaymasterV07Bytecode === "0x") {
-      throw new Error("Paymaster implementation bytecode is empty. Make sure contracts are compiled.");
-    }
-
-    // Get factory instance at deployed address
-    const factoryContract = getContract({
-      address: factoryAddress,
-      abi: FactoryAbi,
-      client: deployerWalletClient,
+    const implementationReceipt = await publicClient.waitForTransactionReceipt({
+      hash: implementationDeployTx
     });
 
-    // 2. Deploy the paymaster system using factory
-    console.log("\nDeploying paymaster system...");
-    console.log("EntryPoint:", ENTRYPOINT_ADDRESS_V07);
-    console.log("Verifying Signer:", deployerWalletClient.account.address);
-    console.log("Owner:", ownerWalletClient.account.address);
-
-    // First simulate the deployment to check for issues
-    try {
-      const { request } = await factoryContract.simulate.deployPaymaster([
-        ENTRYPOINT_ADDRESS_V07,
-        deployerWalletClient.account.address,
-        ownerWalletClient.account.address
-      ]);
-      console.log("Simulation successful. Proceeding with deployment...");
-    } catch (simError) {
-      console.error("Deployment simulation failed:", simError);
-      throw new Error(`Deployment simulation failed: ${simError.message}`);
+    if (!implementationReceipt.contractAddress) {
+      throw new Error("Implementation deployment failed");
     }
 
-    // Proceed with actual deployment
-    const deployTx = await factoryContract.write.deployPaymaster([
-      ENTRYPOINT_ADDRESS_V07,
-      deployerWalletClient.account.address,
-      ownerWalletClient.account.address
-    ], {
-      gas: 5000000n,
-      maxFeePerGas: 3000000000n,
-      maxPriorityFeePerGas: 1500000000n
-    }) as Hash;
+    const implementationAddress = implementationReceipt.contractAddress;
+    console.log(`Implementation deployed to: ${implementationAddress}`);
 
-    console.log("Deployment transaction sent:", deployTx);
-    const deployReceipt = await publicClient.waitForTransactionReceipt({ 
-      hash: deployTx,
-      timeout: 60_000 // 60 second timeout
+    // 2. Prepare initialization data
+    const initializeFunction = PaymasterV07Abi.find((item: any) => 
+      item.type === 'function' && item.name === 'initialize'
+    );
+
+    if (!initializeFunction) {
+      throw new Error('Initialize function not found in ABI');
+    }
+
+    const initData = encodeFunctionData({
+      abi: [initializeFunction],
+      functionName: 'initialize',
+      args: [
+        ENTRYPOINT_ADDRESS_V07, 
+        deployerWalletClient.account.address, // Using deployer as trusted signer
+        ownerWalletClient.account.address  
+      ]
     });
 
-    console.log("Deploy receipt status:", deployReceipt.status);
-    
-    // Handle BigInt serialization in logs
-    const serializableLogs = deployReceipt.logs.map(log => ({
-      ...log,
-      logIndex: Number(log.logIndex),
-      transactionIndex: Number(log.transactionIndex),
-      blockNumber: Number(log.blockNumber),
-      // Convert other potential BigInt values to strings
-      data: log.data,
-      topics: log.topics
-    }));
-    
-    console.log("Deploy receipt logs:", JSON.stringify(serializableLogs, null, 2));
-    
-    if (deployReceipt.status === 'reverted') {
-      throw new Error("Deployment transaction reverted");
+    // 3. Deploy the proxy
+    console.log("Deploying proxy contract...");
+    const proxyDeployTx = await deployerWalletClient.deployContract({
+      abi: ProxyAbi,
+      bytecode: ProxyBytecode as Hex,
+      args: [implementationAddress, initData]
+    });
+
+    const proxyReceipt = await publicClient.waitForTransactionReceipt({
+      hash: proxyDeployTx
+    });
+
+    if (!proxyReceipt.contractAddress) {
+      throw new Error("Proxy deployment failed");
     }
 
-    if (!deployReceipt.logs || deployReceipt.logs.length === 0) {
-      // Try to get the proxy address through a different method
-      const events = await factoryContract.getEvents.ProxyDeployed();
-      if (events && events.length > 0) {
-        // Cast the event log to the expected type
-        const event = events[0] as unknown as { 
-          args: { proxy: Address } 
-        };
-        const proxyAddress = event.args.proxy;
-        console.log("Found proxy address from events:", proxyAddress);
-      } else {
-        throw new Error("No logs or events found in deployment receipt. Deployment likely failed.");
-      }
-    }
+    const proxyAddress = proxyReceipt.contractAddress;
+    console.log(`Proxy deployed to: ${proxyAddress}`);
 
-    // Get the proxy address from the transaction logs
-    const proxyAddress = deployReceipt.logs[deployReceipt.logs.length - 1].address;
-    console.log("Paymaster system deployed!");
-    console.log("Proxy address (use this as your paymaster address):", proxyAddress);
-    console.log("Transaction hash:", deployTx);
-
-    // Verify the deployment
-    const code = await publicClient.getBytecode({ address: proxyAddress });
-    if (!code || code === "0x") {
-      throw new Error("Deployed proxy has no code");
-    }
-
-    // 3. Get paymaster instance
+    // 4. Get the paymaster instance (proxy with implementation ABI)
     const paymaster = getContract({
       address: proxyAddress,
       abi: PaymasterV07Abi,
       client: deployerWalletClient,
     });
 
-    // 4. Fund the paymaster through EntryPoint
-    const entryPointV7 = getContract({
+    // 5. Verify initialization
+    console.log('\nVerifying initialization...');
+    const [owner, entryPoint, verifyingSigner, version] = await Promise.all([
+      paymaster.read.owner([]),
+      paymaster.read.entryPoint([]),
+      paymaster.read.verifyingSigner([]),
+      paymaster.read.VERSION([])
+    ]);
+
+    console.log(`Owner: ${owner}`);
+    console.log(`EntryPoint: ${entryPoint}`);
+    console.log(`Verifying Signer: ${verifyingSigner}`);
+    console.log(`Version: ${version}`);
+
+    // 6. Fund the paymaster through EntryPoint
+    const entryPointContract = getContract({
       address: ENTRYPOINT_ADDRESS_V07,
       abi: ENTRYPOINT_V07_ABI,
       client: deployerWalletClient,
     });
 
-    await entryPointV7.write.depositTo([proxyAddress], {
+    await entryPointContract.write.depositTo([proxyAddress], {
       value: parseEther("50"),
     });
     console.log("Funded SBC Paymaster V0.7");
@@ -212,7 +171,6 @@ export const setupSbcPaymasterV07 = async (
     return paymaster;
   } catch (error) {
     console.error("Detailed error:", JSON.stringify(error, null, 2));
-    // Additional error context
     if (error.message?.includes("0xb06ebf3d")) {
       console.error("\nCreate2EmptyBytecode error detected. This usually means:");
       console.error("1. The contracts haven't been compiled");

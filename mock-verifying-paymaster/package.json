@@ -2,13 +2,15 @@
   "name": "mock-paymaster",
   "private": true,
   "scripts": {
-    "start": "wait-port anvil:8545 && wait-port alto:4337 && tsx src/index.ts"
+    "copy-artifacts": "copyfiles -u 1 \"artifacts/**/*\" src/artifacts/",
+    "start": "npm run copy-artifacts && wait-port anvil:8545 && wait-port alto:4337 && tsx src/index.ts"
   },
   "dependencies": {
     "@account-abstraction/contracts": "0.7.0",
     "@fastify/cors": "^9.0.1",
     "@openzeppelin/contracts": "^5.2.0",
     "@openzeppelin/contracts-upgradeable": "^5.2.0",
+    "copyfiles": "^2.4.1",
     "ethers": "^6.13.5",
     "fastify": "^4.26.2",
     "permissionless": "^0.1.0",

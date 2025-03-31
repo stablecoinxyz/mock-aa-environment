@@ -10,6 +10,7 @@ import {
   type RpcRequestError,
   type Transport,
   type WalletClient,
+  concat,
   hexToBytes,
   toHex,
 } from "viem";
@@ -30,6 +31,7 @@ import {
   ValidationErrors,
   jsonRpcSchema,
   pmGetPaymasterData,
+  pmGetPaymasterStubDataParamsSchema,
   pmSponsorUserOperationParamsSchema,
 } from "./helpers/schema";
 import {
@@ -567,8 +569,18 @@ const handleSbcMethod = async (
   parsedBody: JsonRpcSchema
 ) => {
   if (parsedBody.method === "pm_getPaymasterStubData") {
+    const params = pmGetPaymasterStubDataParamsSchema.safeParse(parsedBody.params);
+    if (!params.success) {
+      throw new RpcError(
+        fromZodError(params.error).message,
+        ValidationErrors.InvalidFields
+      );
+    }
+
+    const [userOperation, _] = params.data;
+    console.log("userOperation SENDER", userOperation.sender);
+
     try {
-      // Prepare timestamps
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const validAfter = currentTimestamp;
       const validUntil = currentTimestamp + 3600; // 1 hour validity
