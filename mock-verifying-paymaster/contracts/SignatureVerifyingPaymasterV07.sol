@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@account-abstraction/contracts/core/Helpers.sol";
+import "hardhat/console.sol";
 
 /**
  * @title SignatureVerifyingPaymasterV07
@@ -51,27 +53,6 @@ contract SignatureVerifyingPaymasterV07 is Initializable, UUPSUpgradeable, IPaym
     modifier onlyEntryPoint() {
         if (msg.sender != address(entryPoint)) revert OnlyEntryPoint();
         _;
-    }
-
-    /**
-     * @dev Packs validation timestamps and signature status into the format 
-     * expected by the EntryPoint contract
-     * 
-     * @param sigFailed True if signature validation failed
-     * @param validUntil Timestamp until which the signature is valid
-     * @param validAfter Timestamp after which the signature is valid
-     * @return packed A uint256 containing all validation data
-     */
-    function _packValidationData(
-        bool sigFailed,
-        uint48 validUntil,
-        uint48 validAfter
-    ) internal pure returns (uint256) {
-        return uint256(
-            (sigFailed ? 1 : 0) |
-            (uint256(validUntil) << 160) |
-            (uint256(validAfter) << 208)
-        );
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -210,6 +191,8 @@ contract SignatureVerifyingPaymasterV07 is Initializable, UUPSUpgradeable, IPaym
         bytes32 userOpHash,
         uint256 maxCost
     ) external virtual override onlyEntryPoint returns (bytes memory context, uint256 validationData) {
+        console.log("validatePaymasterUserOp -- did we get here?");
+
         // Check if paymaster has enough deposit
         require(entryPoint.getDepositInfo(address(this)).deposit >= maxCost, 
             "SignatureVerifyingPaymaster: deposit too low");
@@ -288,6 +271,11 @@ contract SignatureVerifyingPaymasterV07 is Initializable, UUPSUpgradeable, IPaym
         } else {
             emit PostOpSucceeded(mode, context, actualGasCost, actualUserOpFeePerGas);
         }
+    }
+
+    // In case contract receives ETH directly to its address
+    receive() external payable {
+        deposit();
     }
 
     /**
