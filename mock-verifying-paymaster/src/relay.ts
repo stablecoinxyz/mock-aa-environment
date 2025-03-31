@@ -10,7 +10,6 @@ import {
   type RpcRequestError,
   type Transport,
   type WalletClient,
-  concat,
   hexToBytes,
   toHex,
 } from "viem";
