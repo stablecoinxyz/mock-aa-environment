@@ -215,7 +215,7 @@ contract SignatureVerifyingPaymasterV07 is Initializable, UUPSUpgradeable, IPaym
             "SignatureVerifyingPaymaster: deposit too low");
 
         // Extract timestamps and signature from paymaster data
-        bytes calldata paymasterData = userOp.paymasterAndData[20:]; // Skip the paymaster address (20 bytes)
+        bytes calldata paymasterData = userOp.paymasterAndData[UserOperationLib.PAYMASTER_DATA_OFFSET:]; 
         
         // Parse the paymaster data
         (uint48 validUntil, uint48 validAfter, bytes calldata signature) = 
