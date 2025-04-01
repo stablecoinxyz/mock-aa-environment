@@ -4,7 +4,3 @@
 export type { Paymaster } from "./Paymaster";
 export type { SampleNFT } from "./SampleNFT";
 export type { SignatureVerifyingPaymasterV07 } from "./SignatureVerifyingPaymasterV07";
-export type { SignatureVerifyingPaymasterV07Factory } from "./SignatureVerifyingPaymasterV07Factory";
-export type { SignatureVerifyingPaymasterV07Proxy } from "./SignatureVerifyingPaymasterV07Proxy";
-export type { SignatureVerifyingPaymasterV07ProxyAdmin } from "./SignatureVerifyingPaymasterV07ProxyAdmin";
-export type { SignatureVerifyingPaymasterV07Storage } from "./SignatureVerifyingPaymasterV07Storage";

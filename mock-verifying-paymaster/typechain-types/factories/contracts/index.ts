@@ -4,7 +4,3 @@
 export { Paymaster__factory } from "./Paymaster__factory";
 export { SampleNFT__factory } from "./SampleNFT__factory";
 export { SignatureVerifyingPaymasterV07__factory } from "./SignatureVerifyingPaymasterV07__factory";
-export { SignatureVerifyingPaymasterV07Factory__factory } from "./SignatureVerifyingPaymasterV07Factory__factory";
-export { SignatureVerifyingPaymasterV07Proxy__factory } from "./SignatureVerifyingPaymasterV07Proxy__factory";
-export { SignatureVerifyingPaymasterV07ProxyAdmin__factory } from "./SignatureVerifyingPaymasterV07ProxyAdmin__factory";
-export { SignatureVerifyingPaymasterV07Storage__factory } from "./SignatureVerifyingPaymasterV07Storage__factory";
