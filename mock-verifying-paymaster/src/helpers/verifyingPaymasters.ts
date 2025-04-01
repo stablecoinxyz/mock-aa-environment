@@ -1,21 +1,13 @@
 import {
   http,
   type Account,
-  type Address,
   type Chain,
   type Hex,
   type Transport,
   type WalletClient,
-  type Hash,
-  concat,
   createPublicClient,
   getContract,
-  getContractAddress,
-  pad,
   parseEther,
-  slice,
-  parseAbiParameters,
-  encodeAbiParameters,
   encodeFunctionData,
 } from "viem";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
@@ -33,40 +25,6 @@ import {
   abi as ProxyAbi,
   bytecode as ProxyBytecode,
 } from "../abi/@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol/ERC1967Proxy.json";
-
-// const DETERMINISTIC_DEPLOYER = "0x4e59b44847b379578588920ca78fbf26c0b4956c";
-
-// /**
-//  * Creates the call that deploys the VerifyingPaymaster v0.7
-//  * @param trustedSigner - The address of the trusted signer
-//  * @param owner - The address of the owner
-//  * @returns The call data for the deployment
-//  */
-// const SBC_PAYMASTER_V07_CALL = (trustedSigner: Address, owner: Address): Hex => {
-//   // Properly encode constructor parameters
-//   const constructorArgs = encodeAbiParameters(
-//     parseAbiParameters("address _entryPoint, address _verifyingSigner, address _owner"), 
-//     [ENTRYPOINT_ADDRESS_V07, trustedSigner, owner]
-//   );
-
-//   // Log key details to verify inputs
-//   console.log("Bytecode length:", (PaymasterV07Bytecode as string).length);
-//   console.log("ConstructorArgs length:", constructorArgs.length);
-//   console.log("ConstructorArgs:", constructorArgs);
-  
-//   // Concatenate salt + bytecode + constructor args
-//   return concat([
-//     "0x0000000000000000000000000000000000000000000000000000000000000000", // salt
-//     PaymasterV07Bytecode as Hex,
-//     constructorArgs
-//   ]);
-// }
-
-interface ComputedAddresses {
-  implementation: Address;
-  proxyAdmin: Address;
-  proxy: Address;
-}
 
 export const setupSbcPaymasterV07 = async (
   deployerWalletClient: WalletClient<Transport, Chain, Account>,
@@ -180,83 +138,3 @@ export const setupSbcPaymasterV07 = async (
     throw error;
   }
 };
-
-// export const setupVerifyingPaymasterV07 = async (
-//   walletClient: WalletClient<Transport, Chain, Account>
-// ) => {
-//   const data = VERIFYING_PAYMASTER_V07_CALL(walletClient.account.address);
-
-//   const publicClient = createPublicClient({
-//     transport: http(process.env.ANVIL_RPC),
-//     chain: await getChain(),
-//   });
-
-//   await walletClient
-//     .sendTransaction({
-//       to: DETERMINISTIC_DEPLOYER,
-//       data,
-//     })
-//     .then((hash) => publicClient.waitForTransactionReceipt({ hash }))
-//     .then(() => console.log("deployed VerifyingPaymaster v0.7"));
-
-//   const address = getContractAddress({
-//     opcode: "CREATE2",
-//     from: DETERMINISTIC_DEPLOYER,
-//     salt: slice(data, 0, 32),
-//     bytecode: slice(data, 32),
-//   });
-
-//   const verifyingPaymaster = getContract({
-//     address,
-//     abi: VERIFYING_PAYMASTER_V07_ABI,
-//     client: walletClient,
-//   });
-
-//   await verifyingPaymaster.write
-//     .deposit({
-//       value: parseEther("50"),
-//     })
-//     .then(() => console.log("Funded VerifyingPaymaster V0.7"));
-
-//   return verifyingPaymaster;
-// };
-
-// export const setupVerifyingPaymasterV06 = async (
-//   walletClient: WalletClient<Transport, Chain, Account>
-// ) => {
-//   const data = VERIFYING_PAYMASTER_V06_CALL(walletClient.account.address);
-
-//   const publicClient = createPublicClient({
-//     transport: http(process.env.ANVIL_RPC),
-//     chain: await getChain(),
-//   });
-
-//   await walletClient
-//     .sendTransaction({
-//       to: DETERMINISTIC_DEPLOYER,
-//       data,
-//     })
-//     .then((hash) => publicClient.waitForTransactionReceipt({ hash }))
-//     .then(() => console.log("deployed VerifyingPaymaster v0.6"));
-
-//   const address = getContractAddress({
-//     opcode: "CREATE2",
-//     from: DETERMINISTIC_DEPLOYER,
-//     salt: slice(data, 0, 32),
-//     bytecode: slice(data, 32),
-//   });
-
-//   const verifyingPaymaster = getContract({
-//     address,
-//     abi: VERIFYING_PAYMASTER_V06_ABI,
-//     client: walletClient,
-//   });
-
-//   await verifyingPaymaster.write
-//     .deposit({
-//       value: parseEther("50"),
-//     })
-//     .then(() => console.log("Funded VerifyingPaymaster V0.6"));
-
-//   return verifyingPaymaster;
-// };

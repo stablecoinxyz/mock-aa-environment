@@ -4,11 +4,7 @@ import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
 import { http } from "viem";
 import { getAnvilWalletClient, getChain } from "./helpers/utils";
-import {
-  // setupVerifyingPaymasterV06,
-  // setupVerifyingPaymasterV07,
-  setupSbcPaymasterV07,
-} from "./helpers/verifyingPaymasters";
+import { setupSbcPaymasterV07 } from "./helpers/verifyingPaymasters";
 import { createSbcRpcHandler } from "./relay";
 import { setupSampleNft } from "./helpers/sampleNft";
 

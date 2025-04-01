@@ -10,7 +10,7 @@ require("dotenv").config();
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0000000000000000000000000000000000000000000000000000000000000000";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const BASE_SEPOLIA_RPC_URL = process.env.BASE_SEPOLIA_RPC_URL || "";
-const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || "";
+// const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || "";
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
