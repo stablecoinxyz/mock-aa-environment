@@ -62,8 +62,10 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     nameOrSignature:
       | "UPGRADE_INTERFACE_VERSION"
       | "VERSION"
+      | "addStake"
       | "deposit"
       | "entryPoint"
+      | "getDeposit"
       | "getHash"
       | "initialize"
       | "owner"
@@ -71,13 +73,14 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
       | "postOp"
       | "proxiableUUID"
       | "renounceOwnership"
-      | "setEntryPoint"
       | "setVerifyingSigner"
       | "transferOwnership"
+      | "unlockStake"
       | "upgradeToAndCall"
       | "validatePaymasterUserOp"
       | "verifyingSigner"
-      | "withdraw"
+      | "withdrawStake"
+      | "withdrawTo"
   ): FunctionFragment;
 
   getEvent(
@@ -85,10 +88,9 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
       | "EntryPointChanged"
       | "Initialized"
       | "OwnershipTransferred"
-      | "PostOpReverted"
-      | "PostOpSucceeded"
       | "Upgraded"
       | "Validated"
+      | "VerifyingSignerUpdated"
   ): EventFragment;
 
   encodeFunctionData(
@@ -96,9 +98,17 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "addStake",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "entryPoint",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getDeposit",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -107,7 +117,7 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [AddressLike, AddressLike, AddressLike]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -127,16 +137,16 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setEntryPoint",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setVerifyingSigner",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "unlockStake",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeToAndCall",
@@ -151,7 +161,11 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "withdraw",
+    functionFragment: "withdrawStake",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawTo",
     values: [AddressLike, BigNumberish]
   ): string;
 
@@ -160,8 +174,10 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "addStake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getHash", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -179,15 +195,15 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setEntryPoint",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setVerifyingSigner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "unlockStake",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -202,7 +218,11 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     functionFragment: "verifyingSigner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawStake",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "withdrawTo", data: BytesLike): Result;
 }
 
 export namespace EntryPointChangedEvent {
@@ -242,43 +262,6 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace PostOpRevertedEvent {
-  export type InputTuple = [context: BytesLike];
-  export type OutputTuple = [context: string];
-  export interface OutputObject {
-    context: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace PostOpSucceededEvent {
-  export type InputTuple = [
-    mode: BigNumberish,
-    context: BytesLike,
-    actualGasCost: BigNumberish,
-    actualUserOpFeePerGas: BigNumberish
-  ];
-  export type OutputTuple = [
-    mode: bigint,
-    context: string,
-    actualGasCost: bigint,
-    actualUserOpFeePerGas: bigint
-  ];
-  export interface OutputObject {
-    mode: bigint;
-    context: string;
-    actualGasCost: bigint;
-    actualUserOpFeePerGas: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
 export namespace UpgradedEvent {
   export type InputTuple = [implementation: AddressLike];
   export type OutputTuple = [implementation: string];
@@ -309,6 +292,19 @@ export namespace ValidatedEvent {
     maxCost: bigint;
     validUntil: bigint;
     validAfter: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace VerifyingSignerUpdatedEvent {
+  export type InputTuple = [oldSigner: AddressLike, newSigner: AddressLike];
+  export type OutputTuple = [oldSigner: string, newSigner: string];
+  export interface OutputObject {
+    oldSigner: string;
+    newSigner: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -363,9 +359,17 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   VERSION: TypedContractMethod<[], [bigint], "view">;
 
+  addStake: TypedContractMethod<
+    [unstakeDelaySec: BigNumberish],
+    [void],
+    "payable"
+  >;
+
   deposit: TypedContractMethod<[], [void], "payable">;
 
   entryPoint: TypedContractMethod<[], [string], "view">;
+
+  getDeposit: TypedContractMethod<[], [bigint], "view">;
 
   getHash: TypedContractMethod<
     [
@@ -379,11 +383,7 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   >;
 
   initialize: TypedContractMethod<
-    [
-      _entryPoint: AddressLike,
-      _verifyingSigner: AddressLike,
-      _owner: AddressLike
-    ],
+    [_verifyingSigner: AddressLike, _owner: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -417,12 +417,6 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-  setEntryPoint: TypedContractMethod<
-    [_entryPoint: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
   setVerifyingSigner: TypedContractMethod<
     [_verifyingSigner: AddressLike],
     [void],
@@ -434,6 +428,8 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     [void],
     "nonpayable"
   >;
+
+  unlockStake: TypedContractMethod<[], [void], "nonpayable">;
 
   upgradeToAndCall: TypedContractMethod<
     [newImplementation: AddressLike, data: BytesLike],
@@ -453,7 +449,13 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   verifyingSigner: TypedContractMethod<[], [string], "view">;
 
-  withdraw: TypedContractMethod<
+  withdrawStake: TypedContractMethod<
+    [withdrawAddress: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  withdrawTo: TypedContractMethod<
     [withdrawAddress: AddressLike, amount: BigNumberish],
     [void],
     "nonpayable"
@@ -470,11 +472,17 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "VERSION"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "addStake"
+  ): TypedContractMethod<[unstakeDelaySec: BigNumberish], [void], "payable">;
+  getFunction(
     nameOrSignature: "deposit"
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "entryPoint"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getDeposit"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getHash"
   ): TypedContractMethod<
@@ -490,11 +498,7 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   getFunction(
     nameOrSignature: "initialize"
   ): TypedContractMethod<
-    [
-      _entryPoint: AddressLike,
-      _verifyingSigner: AddressLike,
-      _owner: AddressLike
-    ],
+    [_verifyingSigner: AddressLike, _owner: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -533,14 +537,14 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setEntryPoint"
-  ): TypedContractMethod<[_entryPoint: AddressLike], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "setVerifyingSigner"
   ): TypedContractMethod<[_verifyingSigner: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "unlockStake"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "upgradeToAndCall"
   ): TypedContractMethod<
@@ -563,7 +567,10 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "verifyingSigner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "withdraw"
+    nameOrSignature: "withdrawStake"
+  ): TypedContractMethod<[withdrawAddress: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "withdrawTo"
   ): TypedContractMethod<
     [withdrawAddress: AddressLike, amount: BigNumberish],
     [void],
@@ -592,20 +599,6 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     OwnershipTransferredEvent.OutputObject
   >;
   getEvent(
-    key: "PostOpReverted"
-  ): TypedContractEvent<
-    PostOpRevertedEvent.InputTuple,
-    PostOpRevertedEvent.OutputTuple,
-    PostOpRevertedEvent.OutputObject
-  >;
-  getEvent(
-    key: "PostOpSucceeded"
-  ): TypedContractEvent<
-    PostOpSucceededEvent.InputTuple,
-    PostOpSucceededEvent.OutputTuple,
-    PostOpSucceededEvent.OutputObject
-  >;
-  getEvent(
     key: "Upgraded"
   ): TypedContractEvent<
     UpgradedEvent.InputTuple,
@@ -618,6 +611,13 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     ValidatedEvent.InputTuple,
     ValidatedEvent.OutputTuple,
     ValidatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "VerifyingSignerUpdated"
+  ): TypedContractEvent<
+    VerifyingSignerUpdatedEvent.InputTuple,
+    VerifyingSignerUpdatedEvent.OutputTuple,
+    VerifyingSignerUpdatedEvent.OutputObject
   >;
 
   filters: {
@@ -654,28 +654,6 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
       OwnershipTransferredEvent.OutputObject
     >;
 
-    "PostOpReverted(bytes)": TypedContractEvent<
-      PostOpRevertedEvent.InputTuple,
-      PostOpRevertedEvent.OutputTuple,
-      PostOpRevertedEvent.OutputObject
-    >;
-    PostOpReverted: TypedContractEvent<
-      PostOpRevertedEvent.InputTuple,
-      PostOpRevertedEvent.OutputTuple,
-      PostOpRevertedEvent.OutputObject
-    >;
-
-    "PostOpSucceeded(uint8,bytes,uint256,uint256)": TypedContractEvent<
-      PostOpSucceededEvent.InputTuple,
-      PostOpSucceededEvent.OutputTuple,
-      PostOpSucceededEvent.OutputObject
-    >;
-    PostOpSucceeded: TypedContractEvent<
-      PostOpSucceededEvent.InputTuple,
-      PostOpSucceededEvent.OutputTuple,
-      PostOpSucceededEvent.OutputObject
-    >;
-
     "Upgraded(address)": TypedContractEvent<
       UpgradedEvent.InputTuple,
       UpgradedEvent.OutputTuple,
@@ -696,6 +674,17 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
       ValidatedEvent.InputTuple,
       ValidatedEvent.OutputTuple,
       ValidatedEvent.OutputObject
+    >;
+
+    "VerifyingSignerUpdated(address,address)": TypedContractEvent<
+      VerifyingSignerUpdatedEvent.InputTuple,
+      VerifyingSignerUpdatedEvent.OutputTuple,
+      VerifyingSignerUpdatedEvent.OutputObject
+    >;
+    VerifyingSignerUpdated: TypedContractEvent<
+      VerifyingSignerUpdatedEvent.InputTuple,
+      VerifyingSignerUpdatedEvent.OutputTuple,
+      VerifyingSignerUpdatedEvent.OutputObject
     >;
   };
 }

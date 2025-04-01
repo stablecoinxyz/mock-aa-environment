@@ -2,7 +2,7 @@
   "name": "mock-paymaster",
   "private": true,
   "scripts": {
-    "copy-artifacts": "copyfiles -u 1 \"artifacts/**/*\" src/artifacts/",
+    "copy-artifacts": "copyfiles -u 1 \"artifacts/**/*\" src/abi/",
     "start": "npm run copy-artifacts && wait-port anvil:8545 && wait-port alto:4337 && tsx src/index.ts"
   },
   "dependencies": {

@@ -83,7 +83,7 @@ export const setupSbcPaymasterV07 = async (
     const implementationDeployTx = await deployerWalletClient.deployContract({
       abi: PaymasterV07Abi,
       bytecode: PaymasterV07Bytecode as Hex,
-      args: []
+      args: [ENTRYPOINT_ADDRESS_V07]
     });
 
     const implementationReceipt = await publicClient.waitForTransactionReceipt({
@@ -110,9 +110,8 @@ export const setupSbcPaymasterV07 = async (
       abi: [initializeFunction],
       functionName: 'initialize',
       args: [
-        ENTRYPOINT_ADDRESS_V07, 
-        deployerWalletClient.account.address, // Using deployer as trusted signer
-        ownerWalletClient.account.address  
+        deployerWalletClient.account.address,
+        ownerWalletClient.account.address
       ]
     });
 

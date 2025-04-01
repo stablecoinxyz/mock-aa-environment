@@ -169,10 +169,6 @@ declare module "hardhat/types/runtime" {
       name: "SignatureVerifyingPaymasterV07",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SignatureVerifyingPaymasterV07__factory>;
-    getContractFactory(
-      name: "SignatureVerifyingPaymasterV07",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07__factory>;
 
     getContractAt(
       name: "BasePaymaster",
@@ -369,11 +365,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
-    getContractAt(
-      name: "SignatureVerifyingPaymasterV07",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
 
     deployContract(
       name: "BasePaymaster",
@@ -527,10 +518,6 @@ declare module "hardhat/types/runtime" {
       name: "SampleNFT",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SampleNFT>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
     deployContract(
       name: "SignatureVerifyingPaymasterV07",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -726,11 +713,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SampleNFT>;
-    deployContract(
-      name: "SignatureVerifyingPaymasterV07",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SignatureVerifyingPaymasterV07>;
     deployContract(
       name: "SignatureVerifyingPaymasterV07",
       args: any[],
