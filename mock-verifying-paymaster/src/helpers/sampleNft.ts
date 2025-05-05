@@ -14,7 +14,6 @@ import {
   encodeAbiParameters,
   parseAbiParameters
 } from "viem";
-import { getChain } from "./utils";
 
 import {
   abi as nftAbi,
@@ -39,8 +38,8 @@ export const setupSampleNft = async (
   const data = SAMPLE_NFT_CALL();
 
   const publicClient = createPublicClient({
-    transport: http(process.env.ANVIL_RPC),
-    chain: await getChain(),
+    transport: http(walletClient.chain.rpcUrls.default.http[0]),
+    chain: walletClient.chain,
   });
 
   await walletClient

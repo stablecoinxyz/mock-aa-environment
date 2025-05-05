@@ -223,19 +223,16 @@ contract SignatureVerifyingPaymasterV07 is Initializable, UUPSUpgradeable, BaseP
         // EXPIRED TIMESTAMP HANDLING:
         // If validUntil is in the past or too close to now, extend it
         // This prevents "AA32 paymaster expired" errors
-        if (validUntil <= now48 || validUntil < now48 + 60) {
-            validUntil = now48 + 3600; // Add 1 hour from now
-        }
+        validUntil = now48 + 3600; // Add 1 hour from now
         
         // FUTURE ACTIVATION HANDLING:
         // If validAfter is in the future, adjust it to be valid now
         // This prevents "AA32 paymaster not due" errors
-        if (validAfter > now48) {
-            validAfter = now48 > 60 ? now48 - 60 : 0; // Set to 60 seconds in the past
-        }
+        validAfter = now48 - 60; // Set to 60 seconds in the past
         
-        console.log("Final validUntil:", validUntil);
-        console.log("Final validAfter:", validAfter);
+        
+        console.log("Final: validAfter:", validAfter, "validUntil:", validUntil);
+        console.log("Now:", now48);
         
         emit Validated(userOpHash, maxCost, validUntil, validAfter);
 
