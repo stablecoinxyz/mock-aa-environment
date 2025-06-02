@@ -36,7 +36,18 @@ docker rmi <image_id>
 
 ## Paymaster Smart Contract
 
-This mock paymaster is an "approve all" paymaster that does not perform any signature validations (i.e. it approves any user operation). It's located in the `mock-verifying-paymaster/contracts` directory. It's compiled using hardhat during the build of the `mock-verifying-paymaster` image.
+This mock paymaster is a **signature-verifying paymaster** that validates EIP712 signatures before approving user operations. It uses the `SignatureVerifyingPaymasterV07` contract located in the `mock-verifying-paymaster/contracts` directory.
+
+For detailed technical documentation, configuration, and troubleshooting, see: [mock-verifying-paymaster/README.md](mock-verifying-paymaster/README.md)
+
+### Quick Overview
+
+- **EIP712 Signature Verification**: Uses structured signing to prevent replay attacks
+- **Timestamp Validation**: Supports `validAfter` and `validUntil` windows for temporal control
+- **Nonce & Calldata Protection**: Each signature is tied to specific transaction data
+- **Version 4 Implementation**: Latest version with enhanced security features
+
+The contract is compiled using Hardhat during the build of the `mock-verifying-paymaster` image and automatically funded on the EntryPoint.
 
 To use your own custom contract, place it in the `mock-verifying-paymaster/contracts` directory and rebuild the `mock-verifying-paymaster` image. You'll need to fund the contract on the EntryPoint in order to use it. A reference of how to fund the contract can be found in the `mock-verifying-paymaster/src/helpers/verifyingPaymasters.ts` file in the `setupSbcPaymasterV07` function.
 

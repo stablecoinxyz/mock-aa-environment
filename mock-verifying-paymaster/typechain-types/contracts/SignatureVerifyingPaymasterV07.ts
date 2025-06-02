@@ -64,15 +64,18 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
       | "VERSION"
       | "addStake"
       | "deposit"
+      | "domainSeparator"
+      | "eip712Domain"
       | "entryPoint"
       | "getDeposit"
       | "getHash"
       | "initialize"
+      | "maxAllowedGasCost"
       | "owner"
-      | "parsePaymasterData"
       | "postOp"
       | "proxiableUUID"
       | "renounceOwnership"
+      | "setMaxAllowedGasCost"
       | "setVerifyingSigner"
       | "transferOwnership"
       | "unlockStake"
@@ -85,8 +88,10 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "EIP712DomainChanged"
       | "EntryPointChanged"
       | "Initialized"
+      | "MaxAllowedGasCostUpdated"
       | "OwnershipTransferred"
       | "Upgraded"
       | "Validated"
@@ -104,6 +109,14 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "domainSeparator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eip712Domain",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "entryPoint",
     values?: undefined
   ): string;
@@ -113,17 +126,24 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getHash",
-    values: [BigNumberish, BigNumberish, AddressLike, AddressLike]
+    values: [
+      BigNumberish,
+      BigNumberish,
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
     values: [AddressLike, AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "parsePaymasterData",
-    values: [BytesLike]
+    functionFragment: "maxAllowedGasCost",
+    values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "postOp",
     values: [BigNumberish, BytesLike, BigNumberish, BigNumberish]
@@ -135,6 +155,10 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxAllowedGasCost",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setVerifyingSigner",
@@ -176,15 +200,23 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addStake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "domainSeparator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "eip712Domain",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getHash", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "parsePaymasterData",
+    functionFragment: "maxAllowedGasCost",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "postOp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiableUUID",
@@ -192,6 +224,10 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxAllowedGasCost",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -225,6 +261,16 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   decodeFunctionResult(functionFragment: "withdrawTo", data: BytesLike): Result;
 }
 
+export namespace EIP712DomainChangedEvent {
+  export type InputTuple = [];
+  export type OutputTuple = [];
+  export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace EntryPointChangedEvent {
   export type InputTuple = [newEntryPoint: AddressLike];
   export type OutputTuple = [newEntryPoint: string];
@@ -242,6 +288,19 @@ export namespace InitializedEvent {
   export type OutputTuple = [version: bigint];
   export interface OutputObject {
     version: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace MaxAllowedGasCostUpdatedEvent {
+  export type InputTuple = [oldLimit: BigNumberish, newLimit: BigNumberish];
+  export type OutputTuple = [oldLimit: bigint, newLimit: bigint];
+  export interface OutputObject {
+    oldLimit: bigint;
+    newLimit: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -367,6 +426,24 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   deposit: TypedContractMethod<[], [void], "payable">;
 
+  domainSeparator: TypedContractMethod<[], [string], "view">;
+
+  eip712Domain: TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
+      }
+    ],
+    "view"
+  >;
+
   entryPoint: TypedContractMethod<[], [string], "view">;
 
   getDeposit: TypedContractMethod<[], [bigint], "view">;
@@ -376,7 +453,9 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
       validUntil: BigNumberish,
       validAfter: BigNumberish,
       paymasterAddress: AddressLike,
-      senderAddress: AddressLike
+      senderAddress: AddressLike,
+      nonce: BigNumberish,
+      calldataHash: BytesLike
     ],
     [string],
     "view"
@@ -388,19 +467,9 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     "nonpayable"
   >;
 
-  owner: TypedContractMethod<[], [string], "view">;
+  maxAllowedGasCost: TypedContractMethod<[], [bigint], "view">;
 
-  parsePaymasterData: TypedContractMethod<
-    [paymasterData: BytesLike],
-    [
-      [bigint, bigint, string] & {
-        validUntil: bigint;
-        validAfter: bigint;
-        signature: string;
-      }
-    ],
-    "view"
-  >;
+  owner: TypedContractMethod<[], [string], "view">;
 
   postOp: TypedContractMethod<
     [
@@ -416,6 +485,12 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   proxiableUUID: TypedContractMethod<[], [string], "view">;
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+
+  setMaxAllowedGasCost: TypedContractMethod<
+    [_maxAllowedGasCost: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   setVerifyingSigner: TypedContractMethod<
     [_verifyingSigner: AddressLike],
@@ -478,6 +553,26 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "deposit"
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
+    nameOrSignature: "domainSeparator"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "eip712Domain"
+  ): TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
+      }
+    ],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "entryPoint"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
@@ -490,7 +585,9 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
       validUntil: BigNumberish,
       validAfter: BigNumberish,
       paymasterAddress: AddressLike,
-      senderAddress: AddressLike
+      senderAddress: AddressLike,
+      nonce: BigNumberish,
+      calldataHash: BytesLike
     ],
     [string],
     "view"
@@ -503,21 +600,11 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "maxAllowedGasCost"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "parsePaymasterData"
-  ): TypedContractMethod<
-    [paymasterData: BytesLike],
-    [
-      [bigint, bigint, string] & {
-        validUntil: bigint;
-        validAfter: bigint;
-        signature: string;
-      }
-    ],
-    "view"
-  >;
   getFunction(
     nameOrSignature: "postOp"
   ): TypedContractMethod<
@@ -536,6 +623,13 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setMaxAllowedGasCost"
+  ): TypedContractMethod<
+    [_maxAllowedGasCost: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "setVerifyingSigner"
   ): TypedContractMethod<[_verifyingSigner: AddressLike], [void], "nonpayable">;
@@ -578,6 +672,13 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   >;
 
   getEvent(
+    key: "EIP712DomainChanged"
+  ): TypedContractEvent<
+    EIP712DomainChangedEvent.InputTuple,
+    EIP712DomainChangedEvent.OutputTuple,
+    EIP712DomainChangedEvent.OutputObject
+  >;
+  getEvent(
     key: "EntryPointChanged"
   ): TypedContractEvent<
     EntryPointChangedEvent.InputTuple,
@@ -590,6 +691,13 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     InitializedEvent.InputTuple,
     InitializedEvent.OutputTuple,
     InitializedEvent.OutputObject
+  >;
+  getEvent(
+    key: "MaxAllowedGasCostUpdated"
+  ): TypedContractEvent<
+    MaxAllowedGasCostUpdatedEvent.InputTuple,
+    MaxAllowedGasCostUpdatedEvent.OutputTuple,
+    MaxAllowedGasCostUpdatedEvent.OutputObject
   >;
   getEvent(
     key: "OwnershipTransferred"
@@ -621,6 +729,17 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
   >;
 
   filters: {
+    "EIP712DomainChanged()": TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+    EIP712DomainChanged: TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+
     "EntryPointChanged(address)": TypedContractEvent<
       EntryPointChangedEvent.InputTuple,
       EntryPointChangedEvent.OutputTuple,
@@ -641,6 +760,17 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
       InitializedEvent.InputTuple,
       InitializedEvent.OutputTuple,
       InitializedEvent.OutputObject
+    >;
+
+    "MaxAllowedGasCostUpdated(uint256,uint256)": TypedContractEvent<
+      MaxAllowedGasCostUpdatedEvent.InputTuple,
+      MaxAllowedGasCostUpdatedEvent.OutputTuple,
+      MaxAllowedGasCostUpdatedEvent.OutputObject
+    >;
+    MaxAllowedGasCostUpdated: TypedContractEvent<
+      MaxAllowedGasCostUpdatedEvent.InputTuple,
+      MaxAllowedGasCostUpdatedEvent.OutputTuple,
+      MaxAllowedGasCostUpdatedEvent.OutputObject
     >;
 
     "OwnershipTransferred(address,address)": TypedContractEvent<

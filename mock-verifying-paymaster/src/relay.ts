@@ -37,6 +37,10 @@ import {
   abi as PaymasterV07Abi,
   bytecode as PaymasterV07Bytecode,
 } from "../artifacts/contracts/SignatureVerifyingPaymasterV07.sol/SignatureVerifyingPaymasterV07.json";
+import { keccak256 } from "viem";
+
+// Constants
+const PAYMASTER_VERSION = "4";
 
 // const handleMethodV06 = async (
 //   userOperation: UserOperation<"v0.6">,
@@ -470,6 +474,52 @@ import {
 
 // SBC methods
 
+/**
+ * Generate EIP712 signature for paymaster data
+ */
+const generatePaymasterSignature = async (
+  walletClient: WalletClient<Transport, Chain, Account>,
+  paymasterAddress: Hex,
+  version: string,
+  validUntil: number,
+  validAfter: number,
+  senderAddress: Hex,
+  nonce: bigint,
+  calldataHash: Hex
+): Promise<Hex> => {
+  const chainId = await walletClient.getChainId();
+  
+  return await walletClient.signTypedData({
+    domain: {
+      name: "SignatureVerifyingPaymaster",
+      version: version,
+      chainId: chainId,
+      verifyingContract: paymasterAddress
+    },
+    types: {
+      PaymasterData: [
+        { name: "validUntil", type: "uint48" },
+        { name: "validAfter", type: "uint48" },
+        { name: "chainId", type: "uint256" },
+        { name: "paymaster", type: "address" },
+        { name: "sender", type: "address" },
+        { name: "nonce", type: "uint256" },
+        { name: "calldataHash", type: "bytes32" }
+      ]
+    },
+    primaryType: "PaymasterData",
+    message: {
+      validUntil: validUntil,
+      validAfter: validAfter,
+      chainId: BigInt(chainId),
+      paymaster: paymasterAddress,
+      sender: senderAddress,
+      nonce: nonce,
+      calldataHash: calldataHash
+    }
+  });
+};
+
 const handleSbcMethodV07 = async (
   userOperation: UserOperation<"v0.7">,
   altoBundlerV07: PimlicoBundlerClient<ENTRYPOINT_ADDRESS_V07_TYPE>,
@@ -483,23 +533,24 @@ const handleSbcMethodV07 = async (
   try {
     // Set timestamps for validation window
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    const validAfter = currentTimestamp;
+    const validAfter = currentTimestamp - 10; // 10 seconds before current time for more generous testing buffer
     const validUntil = currentTimestamp + 3600; // 1 hour validity
     
-    // Use the sender address from the userOperation
     const senderAddress = userOperation.sender;
+
+    const calldataHash = keccak256(hexToBytes(userOperation.callData));
     
-    const contractHash = await paymasterV07.read.getHash([
+    // Sign using EIP712 structured signing that matches the contract exactly
+    const signature = await generatePaymasterSignature(
+      walletClient,
+      paymasterV07.address,
+      PAYMASTER_VERSION,
       validUntil,
       validAfter,
-      paymasterV07.address,
-      senderAddress
-    ]) as Hex;
-    
-    // Sign the hash
-    const signature = await walletClient.signMessage({
-      message: { raw: hexToBytes(contractHash) }
-    });
+      senderAddress,
+      userOperation.nonce,
+      calldataHash
+    );
     
     // Construct paymasterData
     const validUntilHex = validUntil.toString(16).padStart(12, '0');
@@ -513,6 +564,11 @@ const handleSbcMethodV07 = async (
         paymaster: paymasterV07.address,
         paymasterData: paymasterData
       };
+      
+      console.log("🔧 Final User Operation for gas estimation:");
+      console.log("  paymaster:", op.paymaster);
+      console.log("  paymasterData:", op.paymasterData);
+      console.log("  paymasterData length:", op.paymasterData.length);
       
       let gasEstimates: EstimateUserOperationGasReturnType<ENTRYPOINT_ADDRESS_V07_TYPE>;
       try {
@@ -581,26 +637,23 @@ const handleSbcMethod = async (
 
     try {
       const currentTimestamp = Math.floor(Date.now() / 1000);
-      const validAfter = currentTimestamp;
+      const validAfter = currentTimestamp - 10; // 10 seconds before current time for more generous testing buffer
       const validUntil = currentTimestamp + 3600; // 1 hour validity
       
-      // Get simplified hash from contract
-      // For stub data, we use a zero address for the user since we don't know it yet
-      const zeroAddress = "0x0000000000000000000000000000000000000000" as Hex;
+      const senderAddress = userOperation.sender;
+      const calldataHash = keccak256(hexToBytes(userOperation.callData));
       
-      const calculatedUserOpHash = await paymasterV07.read.getHash([
+      const signature = await generatePaymasterSignature(
+        walletClient,
+        paymasterV07.address,
+        PAYMASTER_VERSION,
         validUntil,
         validAfter,
-        paymasterV07.address,
-        zeroAddress
-      ]) as Hex;
-      
-      // Sign the hash
-      const signature = await walletClient.signMessage({
-        message: { raw: hexToBytes(calculatedUserOpHash) }
-      });
-      
-      // Create paymasterData with formatted timestamps
+        senderAddress,
+        userOperation.nonce,
+        calldataHash
+      );
+
       const validUntilHex = validUntil.toString(16).padStart(12, '0');
       const validAfterHex = validAfter.toString(16).padStart(12, '0');
       const paymasterData = `0x${validUntilHex}${validAfterHex}${signature.slice(2)}` as Hex;

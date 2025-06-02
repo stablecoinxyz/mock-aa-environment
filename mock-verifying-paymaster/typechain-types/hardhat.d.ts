@@ -58,6 +58,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ContextUpgradeable__factory>;
     getContractFactory(
+      name: "EIP712Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EIP712Upgradeable__factory>;
+    getContractFactory(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
@@ -82,33 +86,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1967__factory>;
     getContractFactory(
+      name: "IERC5267",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC5267__factory>;
+    getContractFactory(
       name: "IBeacon",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IBeacon__factory>;
     getContractFactory(
-      name: "ERC1967Proxy",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC1967Proxy__factory>;
-    getContractFactory(
       name: "ERC1967Utils",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1967Utils__factory>;
-    getContractFactory(
-      name: "Proxy",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Proxy__factory>;
-    getContractFactory(
-      name: "ProxyAdmin",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ProxyAdmin__factory>;
-    getContractFactory(
-      name: "ITransparentUpgradeableProxy",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ITransparentUpgradeableProxy__factory>;
-    getContractFactory(
-      name: "TransparentUpgradeableProxy",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TransparentUpgradeableProxy__factory>;
     getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -129,10 +117,6 @@ declare module "hardhat/types/runtime" {
       name: "Address",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Address__factory>;
-    getContractFactory(
-      name: "Create2",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Create2__factory>;
     getContractFactory(
       name: "ECDSA",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -226,6 +210,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ContextUpgradeable>;
     getContractAt(
+      name: "EIP712Upgradeable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EIP712Upgradeable>;
+    getContractAt(
       name: "Ownable",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -256,40 +245,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC1967>;
     getContractAt(
+      name: "IERC5267",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC5267>;
+    getContractAt(
       name: "IBeacon",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IBeacon>;
     getContractAt(
-      name: "ERC1967Proxy",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC1967Proxy>;
-    getContractAt(
       name: "ERC1967Utils",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC1967Utils>;
-    getContractAt(
-      name: "Proxy",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Proxy>;
-    getContractAt(
-      name: "ProxyAdmin",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ProxyAdmin>;
-    getContractAt(
-      name: "ITransparentUpgradeableProxy",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ITransparentUpgradeableProxy>;
-    getContractAt(
-      name: "TransparentUpgradeableProxy",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.TransparentUpgradeableProxy>;
     getContractAt(
       name: "ERC721",
       address: string | ethers.Addressable,
@@ -315,11 +284,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Address>;
-    getContractAt(
-      name: "Create2",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Create2>;
     getContractAt(
       name: "ECDSA",
       address: string | ethers.Addressable,
@@ -411,6 +375,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ContextUpgradeable>;
     deployContract(
+      name: "EIP712Upgradeable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EIP712Upgradeable>;
+    deployContract(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
@@ -435,33 +403,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC1967>;
     deployContract(
+      name: "IERC5267",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC5267>;
+    deployContract(
       name: "IBeacon",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IBeacon>;
     deployContract(
-      name: "ERC1967Proxy",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC1967Proxy>;
-    deployContract(
       name: "ERC1967Utils",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC1967Utils>;
-    deployContract(
-      name: "Proxy",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Proxy>;
-    deployContract(
-      name: "ProxyAdmin",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ProxyAdmin>;
-    deployContract(
-      name: "ITransparentUpgradeableProxy",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ITransparentUpgradeableProxy>;
-    deployContract(
-      name: "TransparentUpgradeableProxy",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TransparentUpgradeableProxy>;
     deployContract(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -482,10 +434,6 @@ declare module "hardhat/types/runtime" {
       name: "Address",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Address>;
-    deployContract(
-      name: "Create2",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Create2>;
     deployContract(
       name: "ECDSA",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -579,6 +527,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ContextUpgradeable>;
     deployContract(
+      name: "EIP712Upgradeable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EIP712Upgradeable>;
+    deployContract(
       name: "Ownable",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -609,40 +562,20 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC1967>;
     deployContract(
+      name: "IERC5267",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC5267>;
+    deployContract(
       name: "IBeacon",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IBeacon>;
     deployContract(
-      name: "ERC1967Proxy",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC1967Proxy>;
-    deployContract(
       name: "ERC1967Utils",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC1967Utils>;
-    deployContract(
-      name: "Proxy",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Proxy>;
-    deployContract(
-      name: "ProxyAdmin",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ProxyAdmin>;
-    deployContract(
-      name: "ITransparentUpgradeableProxy",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ITransparentUpgradeableProxy>;
-    deployContract(
-      name: "TransparentUpgradeableProxy",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.TransparentUpgradeableProxy>;
     deployContract(
       name: "ERC721",
       args: any[],
@@ -668,11 +601,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Address>;
-    deployContract(
-      name: "Create2",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Create2>;
     deployContract(
       name: "ECDSA",
       args: any[],

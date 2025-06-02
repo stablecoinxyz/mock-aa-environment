@@ -38,7 +38,7 @@ export const setupSampleNft = async (
   const data = SAMPLE_NFT_CALL();
 
   const publicClient = createPublicClient({
-    transport: http(walletClient.chain.rpcUrls.default.http[0]),
+    transport: http(walletClient.transport.url),
     chain: walletClient.chain,
   });
 

@@ -22,7 +22,7 @@ const BUNDLER_RPC = process.env.ALTO_RPC!;
 const PAYMASTER_RPC = process.env.PAYMASTER_RPC!;
 
 // The address of the NFT contract we deployed with mock-paymaster
-const NFT_CONTRACT_ADDRESS = "0xb819edABAEccc6E0eE44371a9A2Df019493DBb58";
+const NFT_CONTRACT_ADDRESS = "0x013FF4BD4d0D3BBBe220d910F051Ce3C9061c0AE";
 
 // Define our local anvil chain
 const localAnvil = defineChain({
@@ -112,12 +112,15 @@ async function main() {
   console.log("                                       ");
   console.log("                                       ");
 
+  // Wait 1 second before checking ownership
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   // We can check the owner of the NFT by calling the `ownerOf` function.
   const ownerOfNft = await localPublicClient.readContract({
     address: NFT_CONTRACT_ADDRESS,
     abi: nftAbi,
     functionName: "ownerOf",
-    args: [BigInt(1)],
+    args: [1n],
   });
 
   console.log(`Owner of NFT: ${ownerOfNft}`);
