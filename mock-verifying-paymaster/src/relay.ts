@@ -480,7 +480,6 @@ const PAYMASTER_VERSION = "4";
 const generatePaymasterSignature = async (
   walletClient: WalletClient<Transport, Chain, Account>,
   paymasterAddress: Hex,
-  version: string,
   validUntil: number,
   validAfter: number,
   senderAddress: Hex,
@@ -492,7 +491,7 @@ const generatePaymasterSignature = async (
   return await walletClient.signTypedData({
     domain: {
       name: "SignatureVerifyingPaymaster",
-      version: version,
+      version: PAYMASTER_VERSION,
       chainId: chainId,
       verifyingContract: paymasterAddress
     },
@@ -500,8 +499,6 @@ const generatePaymasterSignature = async (
       PaymasterData: [
         { name: "validUntil", type: "uint48" },
         { name: "validAfter", type: "uint48" },
-        { name: "chainId", type: "uint256" },
-        { name: "paymaster", type: "address" },
         { name: "sender", type: "address" },
         { name: "nonce", type: "uint256" },
         { name: "calldataHash", type: "bytes32" }
@@ -511,13 +508,28 @@ const generatePaymasterSignature = async (
     message: {
       validUntil: validUntil,
       validAfter: validAfter,
-      chainId: BigInt(chainId),
-      paymaster: paymasterAddress,
       sender: senderAddress,
       nonce: nonce,
       calldataHash: calldataHash
     }
   });
+};
+
+/**
+ * Create paymaster data by combining timestamps and signature
+ * @param validUntil The timestamp until which the signature is valid
+ * @param validAfter The timestamp after which the signature is valid
+ * @param signature The EIP712 signature
+ * @returns The formatted paymaster data
+ */
+const createPaymasterData = (
+  validUntil: number,
+  validAfter: number,
+  signature: Hex
+): Hex => {
+  const validUntilHex = validUntil.toString(16).padStart(12, '0');
+  const validAfterHex = validAfter.toString(16).padStart(12, '0');
+  return `0x${validUntilHex}${validAfterHex}${signature.slice(2)}` as Hex;
 };
 
 const handleSbcMethodV07 = async (
@@ -544,7 +556,6 @@ const handleSbcMethodV07 = async (
     const signature = await generatePaymasterSignature(
       walletClient,
       paymasterV07.address,
-      PAYMASTER_VERSION,
       validUntil,
       validAfter,
       senderAddress,
@@ -553,9 +564,7 @@ const handleSbcMethodV07 = async (
     );
     
     // Construct paymasterData
-    const validUntilHex = validUntil.toString(16).padStart(12, '0');
-    const validAfterHex = validAfter.toString(16).padStart(12, '0');
-    const paymasterData = `0x${validUntilHex}${validAfterHex}${signature.slice(2)}` as Hex;
+    const paymasterData = createPaymasterData(validUntil, validAfter, signature);
     
     if (estimateGas) {
       // For gas estimation
@@ -646,7 +655,6 @@ const handleSbcMethod = async (
       const signature = await generatePaymasterSignature(
         walletClient,
         paymasterV07.address,
-        PAYMASTER_VERSION,
         validUntil,
         validAfter,
         senderAddress,
@@ -654,9 +662,7 @@ const handleSbcMethod = async (
         calldataHash
       );
 
-      const validUntilHex = validUntil.toString(16).padStart(12, '0');
-      const validAfterHex = validAfter.toString(16).padStart(12, '0');
-      const paymasterData = `0x${validUntilHex}${validAfterHex}${signature.slice(2)}` as Hex;
+      const paymasterData = createPaymasterData(validUntil, validAfter, signature);
       
       // Return with gas limits
       return {
