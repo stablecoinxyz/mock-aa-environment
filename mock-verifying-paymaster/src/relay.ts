@@ -40,7 +40,7 @@ import {
 import { keccak256 } from "viem";
 
 // Constants
-const PAYMASTER_VERSION = "4";
+const PAYMASTER_VERSION = "5";
 
 // const handleMethodV06 = async (
 //   userOperation: UserOperation<"v0.6">,
@@ -634,6 +634,7 @@ const handleSbcMethod = async (
 ) => {
   if (parsedBody.method === "pm_getPaymasterStubData") {
     const params = pmGetPaymasterStubDataParamsSchema.safeParse(parsedBody.params);
+
     if (!params.success) {
       throw new RpcError(
         fromZodError(params.error).message,
@@ -664,7 +665,6 @@ const handleSbcMethod = async (
 
       const paymasterData = createPaymasterData(validUntil, validAfter, signature);
       
-      // Return with gas limits
       return {
         paymasterData: paymasterData,
         paymasterVerificationGasLimit: toHex(100_000n),

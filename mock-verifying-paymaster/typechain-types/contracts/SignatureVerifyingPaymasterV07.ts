@@ -68,15 +68,13 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
       | "eip712Domain"
       | "entryPoint"
       | "getDeposit"
-      | "getDomainName"
-      | "getDomainVersion"
       | "getHash"
       | "initialize"
       | "maxAllowedGasCost"
       | "owner"
       | "postOp"
       | "proxiableUUID"
-      | "reinitializeGasCost"
+      | "reinitializeEIP712"
       | "renounceOwnership"
       | "setMaxAllowedGasCost"
       | "setVerifyingSigner"
@@ -128,14 +126,6 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getDomainName",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getDomainVersion",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getHash",
     values: [BigNumberish, BigNumberish, AddressLike, BigNumberish, BytesLike]
   ): string;
@@ -157,8 +147,8 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "reinitializeGasCost",
-    values: [BigNumberish]
+    functionFragment: "reinitializeEIP712",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -218,14 +208,6 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "getDomainName",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getDomainVersion",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "getHash", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
@@ -239,7 +221,7 @@ export interface SignatureVerifyingPaymasterV07Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "reinitializeGasCost",
+    functionFragment: "reinitializeEIP712",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -468,15 +450,11 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   getDeposit: TypedContractMethod<[], [bigint], "view">;
 
-  getDomainName: TypedContractMethod<[], [string], "view">;
-
-  getDomainVersion: TypedContractMethod<[], [string], "view">;
-
   getHash: TypedContractMethod<
     [
       validUntil: BigNumberish,
       validAfter: BigNumberish,
-      senderAddress: AddressLike,
+      sender: AddressLike,
       nonce: BigNumberish,
       calldataHash: BytesLike
     ],
@@ -507,11 +485,7 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
 
   proxiableUUID: TypedContractMethod<[], [string], "view">;
 
-  reinitializeGasCost: TypedContractMethod<
-    [_maxAllowedGasCost: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  reinitializeEIP712: TypedContractMethod<[], [void], "nonpayable">;
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
@@ -608,18 +582,12 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "getDeposit"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "getDomainName"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "getDomainVersion"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "getHash"
   ): TypedContractMethod<
     [
       validUntil: BigNumberish,
       validAfter: BigNumberish,
-      senderAddress: AddressLike,
+      sender: AddressLike,
       nonce: BigNumberish,
       calldataHash: BytesLike
     ],
@@ -655,12 +623,8 @@ export interface SignatureVerifyingPaymasterV07 extends BaseContract {
     nameOrSignature: "proxiableUUID"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "reinitializeGasCost"
-  ): TypedContractMethod<
-    [_maxAllowedGasCost: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "reinitializeEIP712"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
